@@ -57,14 +57,12 @@ public class UserSessionManagementServiceImpl implements UserSessionManagementSe
             UserSessionException {
 
         validate(username, userStoreDomain, tenantDomain);
-        List<String> sessionListOfUser = getSessionsOfUser(username, userStoreDomain, tenantDomain);
 
-        if (!sessionListOfUser.isEmpty()) {
-            if (log.isDebugEnabled()) {
-                log.debug("Terminating all the active sessions of user: " + username + " of userstore domain: " +
-                        userStoreDomain + " in tenant: " + tenantDomain);
-            }
-            terminateSessionsOfUser(sessionListOfUser);
+        String userId = FrameworkUtils.resolveUserIdFromUsername(getTenantId(tenantDomain), userStoreDomain, username);
+        try {
+            terminateSessionsByUserId(userId);
+        } catch (SessionManagementException e) {
+            throw new UserSessionException("Error while terminating sessions of user.", e);
         }
     }
 
@@ -78,14 +76,6 @@ public class UserSessionManagementServiceImpl implements UserSessionManagementSe
         if (MultitenantConstants.INVALID_TENANT_ID == tenantId) {
             throw new UserSessionException("Invalid tenant domain: " + tenantDomain + " provided.");
         }
-    }
-
-    private List<String> getSessionsOfUser(String username, String userStoreDomain, String tenantDomain) throws
-            UserSessionException {
-
-        String userId = UserSessionStore.getInstance().getUserId(username, getTenantId(tenantDomain),
-                userStoreDomain);
-        return UserSessionStore.getInstance().getSessionId(userId);
     }
 
     private void terminateSessionsOfUser(List<String> sessionList) {
