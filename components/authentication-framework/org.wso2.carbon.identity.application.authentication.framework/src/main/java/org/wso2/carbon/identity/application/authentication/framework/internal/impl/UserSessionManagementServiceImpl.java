@@ -31,6 +31,7 @@ import org.wso2.carbon.identity.application.authentication.framework.exception.s
 import org.wso2.carbon.identity.application.authentication.framework.exception.session.mgt.SessionManagementException;
 import org.wso2.carbon.identity.application.authentication.framework.exception.session.mgt
         .SessionManagementServerException;
+import org.wso2.carbon.identity.application.authentication.framework.internal.FrameworkServiceComponent;
 import org.wso2.carbon.identity.application.authentication.framework.internal.FrameworkServiceDataHolder;
 import org.wso2.carbon.identity.application.authentication.framework.model.UserSession;
 import org.wso2.carbon.identity.application.authentication.framework.services.SessionManagementService;
@@ -39,6 +40,9 @@ import org.wso2.carbon.identity.application.authentication.framework.util.Framew
 import org.wso2.carbon.identity.application.authentication.framework.util.SessionMgtConstants;
 import org.wso2.carbon.identity.application.common.model.User;
 import org.wso2.carbon.user.api.UserStoreException;
+import org.wso2.carbon.user.api.UserStoreManager;
+import org.wso2.carbon.user.core.UserCoreConstants;
+import org.wso2.carbon.user.core.common.AbstractUserStoreManager;
 import org.wso2.carbon.user.core.service.RealmService;
 
 import java.util.ArrayList;
@@ -58,12 +62,68 @@ public class UserSessionManagementServiceImpl implements UserSessionManagementSe
 
         validate(username, userStoreDomain, tenantDomain);
 
-        String userId = FrameworkUtils.resolveUserIdFromUsername(getTenantId(tenantDomain), userStoreDomain, username);
+        String userId = resolveUserIdFromUsername(getTenantId(tenantDomain), userStoreDomain, username);
         try {
             terminateSessionsByUserId(userId);
         } catch (SessionManagementException e) {
             throw new UserSessionException("Error while terminating sessions of user.", e);
         }
+    }
+
+    /**
+     * Retrieves the unique user id of the given username.
+     *
+     * @param tenantId          id of the tenant domain of the user
+     * @param userStoreDomain   userstore of the user
+     * @param username          username
+     * @return                  unique user id of the user
+     * @throws UserSessionException
+     */
+    private String resolveUserIdFromUsername(int tenantId, String userStoreDomain, String username) throws
+            UserSessionException {
+
+        try {
+            if (userStoreDomain == null) {
+                userStoreDomain = UserCoreConstants.PRIMARY_DEFAULT_DOMAIN_NAME;
+            }
+            UserStoreManager userStoreManager = getUserStoreManager(tenantId, userStoreDomain);
+            try {
+                if (userStoreManager instanceof AbstractUserStoreManager) {
+                    return ((AbstractUserStoreManager) userStoreManager).getUserIDFromUserName(username);
+                }
+                if (log.isDebugEnabled()) {
+                    log.debug("Provided user store manager for the user: " + username + ", is not an instance of the " +
+                            "AbstractUserStore manager");
+                }
+                throw new UserSessionException("Unable to get the unique id of the user: " + username + ".");
+            } catch (org.wso2.carbon.user.core.UserStoreException e) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Error occurred while resolving Id for the user: " + username, e);
+                }
+                throw new UserSessionException("Error occurred while resolving Id for the user: " + username, e);
+            }
+        } catch (UserStoreException e) {
+            throw new UserSessionException("Error occurred while retrieving the userstore manager to resolve Id for " +
+                    "the user: " + username, e);
+        }
+    }
+
+    private static UserStoreManager getUserStoreManager(int tenantId, String userStoreDomain)
+            throws UserStoreException {
+
+        UserStoreManager userStoreManager = FrameworkServiceComponent.getRealmService().getTenantUserRealm(tenantId)
+                .getUserStoreManager();
+        if (userStoreManager instanceof org.wso2.carbon.user.core.UserStoreManager) {
+            return ((org.wso2.carbon.user.core.UserStoreManager) userStoreManager).getSecondaryUserStoreManager(
+                    userStoreDomain);
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("Unable to resolve the corresponding user store manager for the domain: " + userStoreDomain
+                    + ", as the provided user store manager: " + userStoreManager.getClass() + ", is not an instance " +
+                    "of org.wso2.carbon.user.core.UserStoreManager. Therefore returning the user store " +
+                    "manager: " + userStoreManager.getClass() + ", from the realm.");
+        }
+        return userStoreManager;
     }
 
     private void validate(String username, String userStoreDomain, String tenantDomain) throws UserSessionException {
