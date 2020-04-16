@@ -761,10 +761,6 @@ public class IdentityProviderManager implements IdpManager {
         scimProvConn.setProvisioningProperties(propertiesList.toArray(new Property[propertiesList.size()]));
         identityProvider.setProvisioningConnectorConfigs(new ProvisioningConnectorConfig[]{scimProvConn});
 
-        // Override few endpoint URLs which are initially persisted in the database and can be out dated with hostname
-        // changes.
-        overrideResidentIdpEPUrls(identityProvider);
-
         return identityProvider;
     }
 
@@ -2492,73 +2488,6 @@ public class IdentityProviderManager implements IdpManager {
             throw IdPManagementUtil.handleClientException(IdPManagementConstants.ErrorMessage
                     .ERROR_CODE_IDP_DOES_NOT_EXIST, resourceId);
         }
-    }
-
-    /**
-     * <<<<<<< Updated upstream
-     * Overrides the persisted endpoint URLs (e.g. SAML endpoint) if the hostname/port has been changed.
-     * =======
-     * Updates the persisted endpoint URLs (e.g. SAML endpoint) if the hostname/port has been changed.
-     * <p>
-     * >>>>>>> Stashed changes
-     *
-     * @param residentIDP
-     * @throws IdentityProviderManagementException
-     */
-    private void overrideResidentIdpEPUrls(IdentityProvider residentIDP)
-            throws IdentityProviderManagementException {
-
-        // Not all endpoints are persisted. So we need to update only a few properties.
-
-        String samlSSOUrl = IdentityUtil.getServerURL(IdentityConstants.ServerConfig.SAMLSSO, true, true);
-        updateFederationAuthenticationConfigProperty(residentIDP,
-                IdentityApplicationConstants.Authenticator
-                        .SAML2SSO.NAME, IdentityApplicationConstants.Authenticator.SAML2SSO.SSO_URL, samlSSOUrl);
-
-        String samlLogoutUrl = IdentityUtil.getServerURL(IdentityConstants.ServerConfig.SAMLSSO, true, true);
-        updateFederationAuthenticationConfigProperty(residentIDP,
-                IdentityApplicationConstants.Authenticator
-                        .SAML2SSO.NAME, IdentityApplicationConstants.Authenticator.SAML2SSO.LOGOUT_REQ_URL,
-                samlLogoutUrl);
-
-        String passiveStsUrl = IdentityUtil.getServerURL(IdentityConstants.STS.PASSIVE_STS, true, true);
-        updateFederationAuthenticationConfigProperty(residentIDP,
-                IdentityApplicationConstants.Authenticator.PassiveSTS.NAME, IdentityApplicationConstants
-                        .Authenticator.PassiveSTS.IDENTITY_PROVIDER_URL, passiveStsUrl);
-    }
-
-    /**
-     * Updates the property values of the given property name of the given authenticator.
-     *
-     * @param residentIdentityProvider
-     * @param authenticatorName
-     * @param propertyName
-     * @param newValue
-     * @return true if the value was updated, false if the value is up to date.
-     */
-    private boolean updateFederationAuthenticationConfigProperty(IdentityProvider residentIdentityProvider, String
-            authenticatorName, String propertyName, String newValue) {
-
-        FederatedAuthenticatorConfig federatedAuthenticatorConfig = IdentityApplicationManagementUtil
-                .getFederatedAuthenticator(residentIdentityProvider.getFederatedAuthenticatorConfigs(),
-                        authenticatorName);
-
-        if (federatedAuthenticatorConfig != null) {
-
-            Property existingProperty = IdentityApplicationManagementUtil.getProperty(federatedAuthenticatorConfig
-                    .getProperties(), propertyName);
-
-            if (existingProperty != null) {
-                String existingPropertyValue = existingProperty.getValue();
-
-                if (!StringUtils.equalsIgnoreCase(existingPropertyValue, newValue)) {
-                    existingProperty.setValue(newValue);
-                    return true;
-                }
-            }
-        }
-
-        return false;
     }
 
     private String getTenantUrl(String url, String tenantDomain) throws URISyntaxException {
