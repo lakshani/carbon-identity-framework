@@ -16,6 +16,7 @@
 
 package org.wso2.carbon.identity.claim.metadata.mgt.dao;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.claim.metadata.mgt.exception.ClaimMetadataException;
@@ -27,6 +28,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,10 +83,39 @@ public class ClaimDialectDAO {
             prepStmt.setInt(2, tenantId);
             prepStmt.executeUpdate();
             IdentityDatabaseUtil.commitTransaction(connection);
+        } catch (SQLIntegrityConstraintViolationException e) {
+            IdentityDatabaseUtil.rollbackTransaction(connection);
+
+            //check whether the claim dialect exists in DB
+            String dialectURI = claimDialect.getClaimDialectURI();
+            boolean isDialectExists = isClaimDialectExtists(dialectURI, tenantId);
+
+            if (isDialectExists) {
+                log.warn("Claim dialect URI " + dialectURI + " is already persisted.");
+            } else {
+                throw new ClaimMetadataException("Error while adding claim dialect " + claimDialect
+                        .getClaimDialectURI(), e);
+            }
         } catch (SQLException e) {
             IdentityDatabaseUtil.rollbackTransaction(connection);
-            throw new ClaimMetadataException("Error while adding claim dialect " + claimDialect
-                    .getClaimDialectURI(), e);
+
+            // Handle constrain violation issue in JDBC drivers which does not throw
+            // SQLIntegrityConstraintViolationException
+            if (StringUtils.containsIgnoreCase(e.getMessage(), "DIALECT_URI_CONSTRAINT")) {
+                //check whether the claim dialect exists in DB
+                String dialectURI = claimDialect.getClaimDialectURI();
+                boolean isDialectExists = isClaimDialectExtists(dialectURI, tenantId);
+
+                if (isDialectExists) {
+                    log.warn("Claim dialect URI " + dialectURI + " is already persisted.");
+                } else {
+                    throw new ClaimMetadataException("Error while adding claim dialect " + claimDialect
+                            .getClaimDialectURI(), e);
+                }
+            } else {
+                throw new ClaimMetadataException(
+                        "Error while adding claim dialect " + claimDialect.getClaimDialectURI(), e);
+            }
         } finally {
             IdentityDatabaseUtil.closeStatement(prepStmt);
             IdentityDatabaseUtil.closeConnection(connection);
@@ -135,5 +166,17 @@ public class ClaimDialectDAO {
             IdentityDatabaseUtil.closeStatement(prepStmt);
             IdentityDatabaseUtil.closeConnection(connection);
         }
+    }
+
+    private boolean isClaimDialectExtists(String dialectURI, int tenantId) throws ClaimMetadataException{
+        //check whether the claim dialect exists in DB
+        List<ClaimDialect> claimDialects = getClaimDialects(tenantId);
+        boolean isDialectExists = false;
+        for (ClaimDialect dialect : claimDialects) {
+            if (dialectURI.equals(dialect.getClaimDialectURI())) {
+                isDialectExists = true;
+            }
+        }
+        return isDialectExists;
     }
 }

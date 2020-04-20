@@ -105,8 +105,10 @@ public class ExternalClaimDAO extends ClaimDAO {
 
             // TODO : Handle invalid external claim URI
 
-            addClaimMapping(connection, externalClaimId, localClaimId, tenantId);
-            addClaimProperties(connection, externalClaimId, externalClaim.getClaimProperties(), tenantId);
+            if (externalClaimId != -1) {
+                addClaimMapping(connection, externalClaimId, localClaimId, tenantId);
+                addClaimProperties(connection, externalClaimId, externalClaim.getClaimProperties(), tenantId);
+            }
             // End transaction
             connection.commit();
         } catch (SQLException e) {

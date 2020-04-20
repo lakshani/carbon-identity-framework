@@ -16,6 +16,7 @@
 
 package org.wso2.carbon.identity.claim.metadata.mgt.dao;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.claim.metadata.mgt.exception.ClaimMetadataClientException;
@@ -29,6 +30,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -100,9 +102,29 @@ public class ClaimDAO {
             if (rs.next()) {
                 claimId = rs.getInt(1);
             }
-        } catch (SQLException e) {
+        } catch (SQLIntegrityConstraintViolationException e) {
+            //check whether claim is already persisted
+            claimId = getClaimId(connection, claimDialectURI, claimURI, tenantId);
+            String msg = "Claim " + claimURI + " in dialect " + claimDialectURI + " is already persisted";
+            if (claimId != 0) {
+                log.warn(msg);
+                // in case the claim record already existed in DB and was not added during the current run, return -1
+                return -1;
+            }
             throw new ClaimMetadataException("Error while adding claim " + claimURI + " to dialect " +
                     claimDialectURI, e);
+        } catch (SQLException e) {
+            if (StringUtils.containsIgnoreCase(e.getMessage(), "CLAIM_URI_CONSTRAINT")) {
+                claimId = getClaimId(connection, claimDialectURI, claimURI, tenantId);
+                String msg = "Claim " + claimURI + " in dialect " + claimDialectURI + " is already persisted";
+                if (claimId != 0) {
+                    log.warn(msg);
+                    return -1;
+                }
+            } else {
+                throw new ClaimMetadataException(
+                        "Error while adding claim " + claimURI + " to dialect " + claimDialectURI, e);
+            }
         } finally {
             IdentityDatabaseUtil.closeResultSet(rs);
             IdentityDatabaseUtil.closeStatement(prepStmt);
