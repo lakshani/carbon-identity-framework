@@ -43,9 +43,17 @@ public class ClaimDialectDAO {
 
     public List<ClaimDialect> getClaimDialects(int tenantId) throws ClaimMetadataException {
 
+        return getClaimDialects(null, tenantId);
+    }
+
+    public List<ClaimDialect> getClaimDialects(Connection connection, int tenantId) throws ClaimMetadataException {
+
         List<ClaimDialect> claimDialects = new ArrayList<>();
 
-        Connection connection = IdentityDatabaseUtil.getDBConnection(false);
+        if (connection == null) {
+            connection = IdentityDatabaseUtil.getDBConnection(false);
+        }
+
         PreparedStatement prepStmt = null;
         ResultSet rs = null;
 
@@ -88,7 +96,7 @@ public class ClaimDialectDAO {
 
             //check whether the claim dialect exists in DB
             String dialectURI = claimDialect.getClaimDialectURI();
-            boolean isDialectExists = isClaimDialectExtists(dialectURI, tenantId);
+            boolean isDialectExists = isClaimDialectExtists(connection, dialectURI, tenantId);
 
             if (isDialectExists) {
                 log.warn("Claim dialect URI " + dialectURI + " is already persisted.");
@@ -104,7 +112,7 @@ public class ClaimDialectDAO {
             if (StringUtils.containsIgnoreCase(e.getMessage(), "DIALECT_URI_CONSTRAINT")) {
                 //check whether the claim dialect exists in DB
                 String dialectURI = claimDialect.getClaimDialectURI();
-                boolean isDialectExists = isClaimDialectExtists(dialectURI, tenantId);
+                boolean isDialectExists = isClaimDialectExtists(connection, dialectURI, tenantId);
 
                 if (isDialectExists) {
                     log.warn("Claim dialect URI " + dialectURI + " is already persisted.");
@@ -168,9 +176,9 @@ public class ClaimDialectDAO {
         }
     }
 
-    private boolean isClaimDialectExtists(String dialectURI, int tenantId) throws ClaimMetadataException{
+    private boolean isClaimDialectExtists(Connection connection, String dialectURI, int tenantId) throws ClaimMetadataException{
         //check whether the claim dialect exists in DB
-        List<ClaimDialect> claimDialects = getClaimDialects(tenantId);
+        List<ClaimDialect> claimDialects = getClaimDialects(connection, tenantId);
         boolean isDialectExists = false;
         for (ClaimDialect dialect : claimDialects) {
             if (dialectURI.equals(dialect.getClaimDialectURI())) {
