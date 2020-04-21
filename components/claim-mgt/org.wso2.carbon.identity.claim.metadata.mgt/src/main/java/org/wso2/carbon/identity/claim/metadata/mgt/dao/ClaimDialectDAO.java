@@ -42,17 +42,16 @@ public class ClaimDialectDAO {
     private static final Log log = LogFactory.getLog(ClaimDialectDAO.class);
 
     public List<ClaimDialect> getClaimDialects(int tenantId) throws ClaimMetadataException {
-
-        return getClaimDialects(null, tenantId);
+        try (Connection connection = IdentityDatabaseUtil.getDBConnection(false);) {
+            return getClaimDialects(connection, tenantId);
+        } catch (SQLException e) {
+            throw new ClaimMetadataException("Error while listing claim dialects", e);
+        }
     }
 
     public List<ClaimDialect> getClaimDialects(Connection connection, int tenantId) throws ClaimMetadataException {
 
         List<ClaimDialect> claimDialects = new ArrayList<>();
-
-        if (connection == null) {
-            connection = IdentityDatabaseUtil.getDBConnection(false);
-        }
 
         PreparedStatement prepStmt = null;
         ResultSet rs = null;
