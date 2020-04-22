@@ -3585,8 +3585,9 @@ public class IdPManagementDAO {
             sqlQuery = IdPManagementConstants.SQLQueries.GET_CONNECTED_APPS_MSSQL;
             prepStmt = connection.prepareStatement(sqlQuery);
             prepStmt.setString(1, id);
-            prepStmt.setInt(2, offset);
-            prepStmt.setInt(3, limit);
+            prepStmt.setString(2, id);
+            prepStmt.setInt(3, offset);
+            prepStmt.setInt(4, limit);
         } else if (databaseProductName.contains("PostgreSQL")) {
             sqlQuery = IdPManagementConstants.SQLQueries.GET_CONNECTED_APPS_POSTGRESSQL;
             prepStmt = connection.prepareStatement(sqlQuery);
@@ -3598,8 +3599,9 @@ public class IdPManagementDAO {
             sqlQuery = IdPManagementConstants.SQLQueries.GET_CONNECTED_APPS_DB2SQL;
             prepStmt = connection.prepareStatement(sqlQuery);
             prepStmt.setString(1, id);
-            prepStmt.setInt(2, limit);
-            prepStmt.setInt(3, offset);
+            prepStmt.setString(2, id);
+            prepStmt.setInt(3, limit);
+            prepStmt.setInt(4, offset);
         } else if (databaseProductName.contains("INFORMIX")) {
             sqlQuery = IdPManagementConstants.SQLQueries.GET_CONNECTED_APPS_INFORMIX;
             prepStmt = connection.prepareStatement(sqlQuery);
