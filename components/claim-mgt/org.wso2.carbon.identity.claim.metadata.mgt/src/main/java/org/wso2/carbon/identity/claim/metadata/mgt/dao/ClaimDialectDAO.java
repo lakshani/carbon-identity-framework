@@ -41,6 +41,7 @@ public class ClaimDialectDAO {
 
     private static final Log log = LogFactory.getLog(ClaimDialectDAO.class);
 
+
     public List<ClaimDialect> getClaimDialects(int tenantId) throws ClaimMetadataException {
         try (Connection connection = IdentityDatabaseUtil.getDBConnection(false);) {
             return getClaimDialects(connection, tenantId);
@@ -106,9 +107,10 @@ public class ClaimDialectDAO {
         } catch (SQLException e) {
             IdentityDatabaseUtil.rollbackTransaction(connection);
 
-            // Handle constrain violation issue in JDBC drivers which does not throw
-            // SQLIntegrityConstraintViolationException
-            if (StringUtils.containsIgnoreCase(e.getMessage(), "DIALECT_URI_CONSTRAINT")) {
+            //In mssql, constraint violation error is wrapped in an SQLServerException instead of an
+            //SQLIntegrityConstraintViolationException. So we are checking the error code of the exception thrown
+            //to identify constrant violation errors in mssql
+            if (e.getErrorCode() == SQLConstants.UNIQUE_CONTRAINT_VIOLATION_ERROR_CODE) {
                 //check whether the claim dialect exists in DB
                 String dialectURI = claimDialect.getClaimDialectURI();
                 boolean isDialectExists = isClaimDialectExtists(connection, dialectURI, tenantId);

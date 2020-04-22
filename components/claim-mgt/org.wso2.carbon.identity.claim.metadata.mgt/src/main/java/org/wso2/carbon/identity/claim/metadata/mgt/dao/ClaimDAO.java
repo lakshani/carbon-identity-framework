@@ -114,7 +114,10 @@ public class ClaimDAO {
             throw new ClaimMetadataException("Error while adding claim " + claimURI + " to dialect " +
                     claimDialectURI, e);
         } catch (SQLException e) {
-            if (StringUtils.containsIgnoreCase(e.getMessage(), "CLAIM_URI_CONSTRAINT")) {
+            //In mssql, constraint violation error is wrapped in an SQLServerException instead of an
+            //SQLIntegrityConstraintViolationException. So we are checking the error code of the exception thrown
+            //to identify constrant violation errors in mssql
+            if (e.getErrorCode() == SQLConstants.UNIQUE_CONTRAINT_VIOLATION_ERROR_CODE) {
                 claimId = getClaimId(connection, claimDialectURI, claimURI, tenantId);
                 String msg = "Claim " + claimURI + " in dialect " + claimDialectURI + " is already persisted";
                 if (claimId != 0) {
