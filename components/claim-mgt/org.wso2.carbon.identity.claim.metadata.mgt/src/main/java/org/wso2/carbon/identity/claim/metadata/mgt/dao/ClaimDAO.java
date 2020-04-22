@@ -103,12 +103,9 @@ public class ClaimDAO {
                 claimId = rs.getInt(1);
             }
         } catch (SQLIntegrityConstraintViolationException e) {
-            //check whether claim is already persisted
-            claimId = getClaimId(connection, claimDialectURI, claimURI, tenantId);
-            String msg = "Claim " + claimURI + " in dialect " + claimDialectURI + " is already persisted";
-            if (claimId != 0) {
-                log.warn(msg);
-                // in case the claim record already existed in DB and was not added during the current run, return -1
+            //check whether claim is already persisted and return -1 as claim ID if yes
+            if (isClaimAlreadyPersisted(connection, claimDialectURI, claimURI, tenantId)) {
+                log.warn("Claim " + claimURI + " in dialect " + claimDialectURI + " is already persisted");
                 return -1;
             }
             throw new ClaimMetadataException("Error while adding claim " + claimURI + " to dialect " +
@@ -118,10 +115,9 @@ public class ClaimDAO {
             //SQLIntegrityConstraintViolationException. So we are checking the error code of the exception thrown
             //to identify constrant violation errors in mssql
             if (e.getErrorCode() == SQLConstants.UNIQUE_CONTRAINT_VIOLATION_ERROR_CODE) {
-                claimId = getClaimId(connection, claimDialectURI, claimURI, tenantId);
-                String msg = "Claim " + claimURI + " in dialect " + claimDialectURI + " is already persisted";
-                if (claimId != 0) {
-                    log.warn(msg);
+                //check whether claim is already persisted and return -1 as claim ID if yes
+                if (isClaimAlreadyPersisted(connection, claimDialectURI, claimURI, tenantId)) {
+                    log.warn("Claim " + claimURI + " in dialect " + claimDialectURI + " is already persisted");
                     return -1;
                 }
             } else {
@@ -256,5 +252,11 @@ public class ClaimDAO {
         } catch (SQLException e) {
             throw new ClaimMetadataException("Error while deleting claim properties", e);
         }
+    }
+
+    private boolean isClaimAlreadyPersisted(Connection connection, String claimDialectURI, String claimURI, int tenantId)
+            throws ClaimMetadataException {
+        int claimId = getClaimId(connection, claimDialectURI, claimURI, tenantId);
+        return (claimId != 0);
     }
 }
