@@ -93,12 +93,8 @@ public class ClaimDialectDAO {
             IdentityDatabaseUtil.commitTransaction(connection);
         } catch (SQLIntegrityConstraintViolationException e) {
             IdentityDatabaseUtil.rollbackTransaction(connection);
-
-            //check whether the claim dialect exists in DB
             String dialectURI = claimDialect.getClaimDialectURI();
-            boolean isDialectExists = isClaimDialectExtists(connection, dialectURI, tenantId);
-
-            if (isDialectExists) {
+            if (isClaimDialectExtists(connection, dialectURI, tenantId)) {
                 log.warn("Claim dialect URI " + dialectURI + " is already persisted.");
             } else {
                 throw new ClaimMetadataException("Error while adding claim dialect " + claimDialect
@@ -113,9 +109,7 @@ public class ClaimDialectDAO {
             if (e.getErrorCode() == SQLConstants.UNIQUE_CONTRAINT_VIOLATION_ERROR_CODE) {
                 //check whether the claim dialect exists in DB
                 String dialectURI = claimDialect.getClaimDialectURI();
-                boolean isDialectExists = isClaimDialectExtists(connection, dialectURI, tenantId);
-
-                if (isDialectExists) {
+                if (isClaimDialectExtists(connection, dialectURI, tenantId)) {
                     log.warn("Claim dialect URI " + dialectURI + " is already persisted.");
                 } else {
                     throw new ClaimMetadataException("Error while adding claim dialect " + claimDialect
