@@ -84,22 +84,16 @@ public class ClaimDialectDAO {
         PreparedStatement prepStmt = null;
 
         String query = SQLConstants.ADD_CLAIM_DIALECT;
+        String dialectURI = claimDialect.getClaimDialectURI();
 
         try {
             prepStmt = connection.prepareStatement(query);
-            prepStmt.setString(1, claimDialect.getClaimDialectURI());
+            prepStmt.setString(1, dialectURI);
             prepStmt.setInt(2, tenantId);
             prepStmt.executeUpdate();
             IdentityDatabaseUtil.commitTransaction(connection);
         } catch (SQLIntegrityConstraintViolationException e) {
-            IdentityDatabaseUtil.rollbackTransaction(connection);
-            String dialectURI = claimDialect.getClaimDialectURI();
-            if (isClaimDialectExtists(connection, dialectURI, tenantId)) {
-                log.warn("Claim dialect URI " + dialectURI + " is already persisted.");
-            } else {
-                throw new ClaimMetadataException("Error while adding claim dialect " + claimDialect
-                        .getClaimDialectURI(), e);
-            }
+            handleSQLIntegrityConstraintViolation(connection, dialectURI, tenantId);
         } catch (SQLException e) {
             IdentityDatabaseUtil.rollbackTransaction(connection);
 
@@ -107,14 +101,7 @@ public class ClaimDialectDAO {
             //SQLIntegrityConstraintViolationException. So we are checking the error code of the exception thrown
             //to identify constrant violation errors in mssql
             if (e.getErrorCode() == SQLConstants.UNIQUE_CONTRAINT_VIOLATION_ERROR_CODE) {
-                //check whether the claim dialect exists in DB
-                String dialectURI = claimDialect.getClaimDialectURI();
-                if (isClaimDialectExtists(connection, dialectURI, tenantId)) {
-                    log.warn("Claim dialect URI " + dialectURI + " is already persisted.");
-                } else {
-                    throw new ClaimMetadataException("Error while adding claim dialect " + claimDialect
-                            .getClaimDialectURI(), e);
-                }
+                handleSQLIntegrityConstraintViolation(connection, dialectURI, tenantId);
             } else {
                 throw new ClaimMetadataException(
                         "Error while adding claim dialect " + claimDialect.getClaimDialectURI(), e);
@@ -171,15 +158,21 @@ public class ClaimDialectDAO {
         }
     }
 
-    private boolean isClaimDialectExtists(Connection connection, String dialectURI, int tenantId) throws ClaimMetadataException{
-        //check whether the claim dialect exists in DB
-        List<ClaimDialect> claimDialects = getClaimDialects(connection, tenantId);
+    private void handleSQLIntegrityConstraintViolation(Connection connection, String dialectURI, int tenantId)
+            throws ClaimMetadataException {
         boolean isDialectExists = false;
+        List<ClaimDialect> claimDialects = getClaimDialects(connection, tenantId);
         for (ClaimDialect dialect : claimDialects) {
             if (dialectURI.equals(dialect.getClaimDialectURI())) {
                 isDialectExists = true;
             }
         }
-        return isDialectExists;
+
+        if (isDialectExists) {
+            log.warn("Claim dialect URI " + dialectURI + " is already persisted.");
+        } else {
+            IdentityDatabaseUtil.rollbackTransaction(connection);
+            throw new ClaimMetadataException("Error while adding claim dialect " + dialectURI);
+        }
     }
 }
