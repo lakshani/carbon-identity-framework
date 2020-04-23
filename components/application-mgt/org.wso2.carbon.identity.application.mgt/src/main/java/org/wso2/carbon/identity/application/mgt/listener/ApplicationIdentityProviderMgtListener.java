@@ -86,20 +86,11 @@ public class ApplicationIdentityProviderMgtListener extends AbstractIdentityProv
                     validateIdpDisable(identityProvider, authSteps, provisioningIdps);
 
                     // Validating Applications with Federated Authenticators configured.
-                    if (authSteps != null && authSteps.length != 0) {
-                        if (ApplicationConstants.AUTH_TYPE_FEDERATED
-                                .equalsIgnoreCase(localAndOutboundAuthConfig.getAuthenticationType())) {
-                            updateApplicationWithFederatedAuthenticator(identityProvider, tenantDomain,
-                                    serviceProvider, authSteps[0]);
-                        } else {
-                            updateApplicationWithMultiStepFederatedAuthenticator(identityProvider, authSteps);
-                        }
-                    }
+                    updateApplicationWithFedaratedAuthenticators(identityProvider, tenantDomain, serviceProvider,
+                            localAndOutboundAuthConfig, authSteps);
 
                     // Validating Applications with Outbound Provisioning Connectors configured.
-                    if (provisioningIdps != null && provisioningIdps.length != 0) {
-                        updateOutboundProvisioningConnectors(identityProvider, provisioningIdps);
-                    }
+                    updateApplicationWithProvisioningConnectors(identityProvider, provisioningIdps);
                 }
 
                 offset = connectedApplications.getOffSet() + connectedApplications.getLimit();
@@ -111,6 +102,32 @@ public class ApplicationIdentityProviderMgtListener extends AbstractIdentityProv
                     "Error when updating default authenticator of service providers", e);
         }
         return true;
+    }
+
+    private void updateApplicationWithProvisioningConnectors(IdentityProvider identityProvider,
+                                                             IdentityProvider[] provisioningIdps)
+            throws IdentityProviderManagementException {
+
+        if (provisioningIdps != null && provisioningIdps.length != 0) {
+            updateOutboundProvisioningConnectors(identityProvider, provisioningIdps);
+        }
+    }
+
+    private void updateApplicationWithFedaratedAuthenticators(IdentityProvider identityProvider, String tenantDomain,
+                                                              ServiceProvider serviceProvider,
+                                                              LocalAndOutboundAuthenticationConfig localAndOutboundAuthConfig,
+                                                              AuthenticationStep[] authSteps)
+            throws IdentityApplicationManagementException, IdentityProviderManagementException {
+
+        if (authSteps != null && authSteps.length != 0) {
+            if (ApplicationConstants.AUTH_TYPE_FEDERATED
+                    .equalsIgnoreCase(localAndOutboundAuthConfig.getAuthenticationType())) {
+                updateApplicationWithFederatedAuthenticator(identityProvider, tenantDomain,
+                        serviceProvider, authSteps[0]);
+            } else {
+                updateApplicationWithMultiStepFederatedAuthenticator(identityProvider, authSteps);
+            }
+        }
     }
 
     private void validateIdpDisable(IdentityProvider identityProvider, AuthenticationStep[] authSteps,
