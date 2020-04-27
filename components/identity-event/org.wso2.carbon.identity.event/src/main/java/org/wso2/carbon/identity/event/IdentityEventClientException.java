@@ -18,6 +18,9 @@
 
 package org.wso2.carbon.identity.event;
 
+/**
+ * Exception class that represents exceptions thrown upon identity events due to client request errors.
+ */
 public class IdentityEventClientException extends IdentityEventException {
 
     private static final long serialVersionUID = 8695127714254151579L;

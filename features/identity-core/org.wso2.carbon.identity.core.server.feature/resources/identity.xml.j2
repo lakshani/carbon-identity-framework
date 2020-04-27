@@ -922,7 +922,9 @@
         <CallbackRegex>{{identity_mgt.recovery.callback_url}}</CallbackRegex>
         <ChallengeQuestion>
             <AnswerRegex>{{identity_mgt.recovery.challenge_question.answer_regex}}</AnswerRegex>
-            <AnswerUniqueness>{{identity_mgt.recovery.challenge_question.enable_unique_answer}}</AnswerUniqueness>
+            <AnswerUniqueness>
+                <Enable>{{identity_mgt.recovery.challenge_question.enable_unique_answer}}</Enable>
+            </AnswerUniqueness>
         </ChallengeQuestion>
     </Recovery>
 
