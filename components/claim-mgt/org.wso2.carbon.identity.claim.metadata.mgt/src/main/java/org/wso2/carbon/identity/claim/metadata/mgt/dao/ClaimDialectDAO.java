@@ -92,15 +92,9 @@ public class ClaimDialectDAO {
             prepStmt.setInt(2, tenantId);
             prepStmt.executeUpdate();
             IdentityDatabaseUtil.commitTransaction(connection);
-        } catch (SQLIntegrityConstraintViolationException e) {
-            handleSQLIntegrityConstraintViolation(connection, dialectURI, tenantId);
         } catch (SQLException e) {
             IdentityDatabaseUtil.rollbackTransaction(connection);
-
-            //In mssql, constraint violation error is wrapped in an SQLServerException instead of an
-            //SQLIntegrityConstraintViolationException. So we are checking the error code of the exception thrown
-            //to identify constrant violation errors in mssql
-            if (e.getErrorCode() == SQLConstants.UNIQUE_CONTRAINT_VIOLATION_ERROR_CODE) {
+            if (isSQLIntegrityConstraintViolation(e)) {
                 handleSQLIntegrityConstraintViolation(connection, dialectURI, tenantId);
             } else {
                 throw new ClaimMetadataException(
@@ -174,5 +168,17 @@ public class ClaimDialectDAO {
             IdentityDatabaseUtil.rollbackTransaction(connection);
             throw new ClaimMetadataException("Error while adding claim dialect " + dialectURI);
         }
+    }
+
+    /**
+     * In mssql, constraint violation error is wrapped in an SQLServerException instead of an
+     * SQLIntegrityConstraintViolationException. So for mssql we are checking the error code of the
+     * exception thrown to identify constrant violation errors in mssql
+     * @param e
+     * @return
+     */
+    private boolean isSQLIntegrityConstraintViolation(SQLException e) {
+        return e instanceof SQLIntegrityConstraintViolationException
+                || e.getErrorCode() == SQLConstants.UNIQUE_CONTRAINT_VIOLATION_ERROR_CODE;
     }
 }
