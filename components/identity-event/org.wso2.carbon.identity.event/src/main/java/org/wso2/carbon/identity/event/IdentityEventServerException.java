@@ -26,18 +26,22 @@ public class IdentityEventServerException extends IdentityEventException {
     private static final long serialVersionUID = -4657303081838983758L;
 
     public IdentityEventServerException(String message) {
+
         super(message);
     }
 
     public IdentityEventServerException(String message, Throwable e) {
+
         super(message, e);
     }
 
     public IdentityEventServerException(String errorCode, String message) {
+
         super(errorCode, message);
     }
 
     public IdentityEventServerException(String errorCode, String message, Throwable throwable) {
+
         super(errorCode, message, throwable);
     }
 }
