@@ -21,7 +21,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.claim.metadata.mgt.exception.ClaimMetadataClientException;
 import org.wso2.carbon.identity.claim.metadata.mgt.exception.ClaimMetadataException;
+import org.wso2.carbon.identity.claim.metadata.mgt.exception.DuplicateClaimException;
 import org.wso2.carbon.identity.claim.metadata.mgt.model.Claim;
+import org.wso2.carbon.identity.claim.metadata.mgt.model.ClaimDialect;
 import org.wso2.carbon.identity.claim.metadata.mgt.util.SQLConstants;
 import org.wso2.carbon.identity.core.util.IdentityDatabaseUtil;
 import org.wso2.carbon.utils.DBUtils;
@@ -32,6 +34,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.wso2.carbon.identity.claim.metadata.mgt.util.ClaimConstants.ErrorMessage.ERROR_CODE_MAPPED_TO_INVALID_LOCAL_CLAIM_URI;
@@ -102,24 +105,11 @@ public class ClaimDAO {
             if (rs.next()) {
                 claimId = rs.getInt(1);
             }
-        } catch (SQLIntegrityConstraintViolationException e) {
-            //check whether claim is already persisted and return -1 as claim ID if yes
-            if (isClaimAlreadyPersisted(connection, claimDialectURI, claimURI, tenantId)) {
-                log.warn("Claim " + claimURI + " in dialect " + claimDialectURI + " is already persisted");
-                return -1;
-            }
-            throw new ClaimMetadataException("Error while adding claim " + claimURI + " to dialect " +
-                    claimDialectURI, e);
         } catch (SQLException e) {
-            //In mssql, constraint violation error is wrapped in an SQLServerException instead of an
-            //SQLIntegrityConstraintViolationException. So we are checking the error code of the exception thrown
-            //to identify constrant violation errors in mssql
-            if (e.getErrorCode() == SQLConstants.UNIQUE_CONTRAINT_VIOLATION_ERROR_CODE) {
-                //check whether claim is already persisted and return -1 as claim ID if yes
-                if (isClaimAlreadyPersisted(connection, claimDialectURI, claimURI, tenantId)) {
-                    log.warn("Claim " + claimURI + " in dialect " + claimDialectURI + " is already persisted");
-                    return -1;
-                }
+            if (isSQLIntegrityConstraintViolation(e) &&
+                    isClaimAlreadyPersisted(connection, claimDialectURI, claimURI, tenantId)) {
+                    throw new DuplicateClaimException(
+                            "Claim " + claimURI + " in dialect " + claimDialectURI + " is already persisted", e);
             } else {
                 throw new ClaimMetadataException(
                         "Error while adding claim " + claimURI + " to dialect " + claimDialectURI, e);
@@ -254,9 +244,32 @@ public class ClaimDAO {
         }
     }
 
+    /**
+     * Checks whether the specified claim is already persisted
+     *  Existence of a valid claim ID (id > 0) for given claimDialectURI and claimURI pair, verifies that the claim
+     *  is already persisted
+     * @param connection connection
+     * @param claimDialectURI dialectURI
+     * @param claimURI claimURI
+     * @param tenantId tenantID
+     * @return
+     * @throws ClaimMetadataException
+     */
     private boolean isClaimAlreadyPersisted(Connection connection, String claimDialectURI, String claimURI, int tenantId)
             throws ClaimMetadataException {
-        int claimId = getClaimId(connection, claimDialectURI, claimURI, tenantId);
-        return (claimId != 0);
+        return getClaimId(connection, claimDialectURI, claimURI, tenantId) > 0;
+    }
+
+    /**
+     * Checks whether the sqlexeption caught is due to a constraint violation error.
+     * In mssql, constraint violation error is wrapped in an SQLServerException instead of an
+     * SQLIntegrityConstraintViolationException. So for mssql we are checking the error code of the
+     * exception thrown to identify constrant violation errors in mssql.
+     * @param e sql exception caught
+     * @return
+     */
+    private boolean isSQLIntegrityConstraintViolation(SQLException e) {
+        return e instanceof SQLIntegrityConstraintViolationException
+                || e.getErrorCode() == SQLConstants.UNIQUE_CONTRAINT_VIOLATION_ERROR_CODE;
     }
 }

@@ -16,7 +16,6 @@
 
 package org.wso2.carbon.identity.claim.metadata.mgt.dao;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.claim.metadata.mgt.exception.ClaimMetadataException;
@@ -94,8 +93,8 @@ public class ClaimDialectDAO {
             IdentityDatabaseUtil.commitTransaction(connection);
         } catch (SQLException e) {
             IdentityDatabaseUtil.rollbackTransaction(connection);
-            if (isSQLIntegrityConstraintViolation(e)) {
-                handleSQLIntegrityConstraintViolation(connection, dialectURI, tenantId);
+            if (isSQLIntegrityConstraintViolation(e) && isDialectExists(connection, dialectURI, tenantId)) {
+                log.warn("Claim dialect URI " + dialectURI + " is already persisted.");
             } else {
                 throw new ClaimMetadataException(
                         "Error while adding claim dialect " + claimDialect.getClaimDialectURI(), e);
@@ -152,7 +151,15 @@ public class ClaimDialectDAO {
         }
     }
 
-    private void handleSQLIntegrityConstraintViolation(Connection connection, String dialectURI, int tenantId)
+    /**
+     * Checks whether the given Claim dialect exists in DB
+     * @param connection connection
+     * @param dialectURI dialectURI
+     * @param tenantId tenantID
+     * @return true if dialect is alredy persisted in DB
+     * @throws ClaimMetadataException
+     */
+    private boolean isDialectExists(Connection connection, String dialectURI, int tenantId)
             throws ClaimMetadataException {
         boolean isDialectExists = false;
         List<ClaimDialect> claimDialects = getClaimDialects(connection, tenantId);
@@ -161,20 +168,15 @@ public class ClaimDialectDAO {
                 isDialectExists = true;
             }
         }
-
-        if (isDialectExists) {
-            log.warn("Claim dialect URI " + dialectURI + " is already persisted.");
-        } else {
-            IdentityDatabaseUtil.rollbackTransaction(connection);
-            throw new ClaimMetadataException("Error while adding claim dialect " + dialectURI);
-        }
+        return isDialectExists;
     }
 
     /**
+     * Checks whether the sqlexeption caught is due to a constraint violation error.
      * In mssql, constraint violation error is wrapped in an SQLServerException instead of an
      * SQLIntegrityConstraintViolationException. So for mssql we are checking the error code of the
-     * exception thrown to identify constrant violation errors in mssql
-     * @param e
+     * exception thrown to identify constrant violation errors in mssql.
+     * @param e sql exception caught
      * @return
      */
     private boolean isSQLIntegrityConstraintViolation(SQLException e) {
