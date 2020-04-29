@@ -205,6 +205,7 @@ public class IdentityEventConstants {
         public static final String PARAMS = "params";
         public static final String AUTHENTICATION_STATUS = "authenticationStatus";
         public static final String USER_CHALLENGE_ANSWERS = "userChallengeAnswers";
+        public static final String USER_OLD_CHALLENGE_ANSWERS = "userNewChallengeAnswers";
     }
 
     public class ErrorMessage {
