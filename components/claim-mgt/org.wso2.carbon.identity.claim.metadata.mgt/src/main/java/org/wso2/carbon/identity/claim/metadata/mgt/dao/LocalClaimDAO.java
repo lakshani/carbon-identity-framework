@@ -185,7 +185,6 @@ public class LocalClaimDAO extends ClaimDAO {
             // End transaction
             connection.commit();
         } catch (DuplicateClaimException e) {
-            rollbackTransaction(connection);
             log.warn(e.getMessage());
         } catch (SQLException e) {
             rollbackTransaction(connection);

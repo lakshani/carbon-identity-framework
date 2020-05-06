@@ -41,7 +41,13 @@ public class ClaimDialectDAO {
 
     private static final Log log = LogFactory.getLog(ClaimDialectDAO.class);
 
-
+    /**
+     * Get all claim dialects in specified tenant.
+     *
+     * @param tenantId Tenant Id
+     * @return list of claim dialects in tenant
+     * @throws ClaimMetadataException
+     */
     public List<ClaimDialect> getClaimDialects(int tenantId) throws ClaimMetadataException {
 
         try (Connection connection = IdentityDatabaseUtil.getDBConnection(false);) {
@@ -189,6 +195,6 @@ public class ClaimDialectDAO {
 
         return e instanceof SQLIntegrityConstraintViolationException
                 || e.getErrorCode() == ClaimConstants.UNIQUE_CONTRAINT_VIOLATION_ERROR_CODE
-                || e.getSQLState().equals(ClaimConstants.UNIQUE_CONTRAINT_VIOLATION_POSTGRES_ERROR_CODE);
+                || ClaimConstants.UNIQUE_CONTRAINT_VIOLATION_POSTGRES_ERROR_CODE.equals(e.getSQLState());
     }
 }

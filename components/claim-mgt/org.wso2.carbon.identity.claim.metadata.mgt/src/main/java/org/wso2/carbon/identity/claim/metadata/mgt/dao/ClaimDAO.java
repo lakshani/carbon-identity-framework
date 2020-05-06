@@ -273,6 +273,6 @@ public class ClaimDAO {
 
         return e instanceof SQLIntegrityConstraintViolationException
                 || e.getErrorCode() == ClaimConstants.UNIQUE_CONTRAINT_VIOLATION_ERROR_CODE
-                || e.getSQLState().equals(ClaimConstants.UNIQUE_CONTRAINT_VIOLATION_POSTGRES_ERROR_CODE);
+                || ClaimConstants.UNIQUE_CONTRAINT_VIOLATION_POSTGRES_ERROR_CODE.equals(e.getSQLState());
     }
 }
