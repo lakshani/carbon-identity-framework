@@ -70,7 +70,7 @@ public class DefaultClaimMetadataStore implements ClaimMetadataStore {
     public DefaultClaimMetadataStore(ClaimConfig claimConfig, int tenantId) {
 
         try {
-            if (claimDialectDAO.getClaimDialects(tenantId).size() == 0) {
+            if (claimDialectDAO.getClaimDialects(tenantId).size() > 0) {
                 init(claimConfig, tenantId);
             }
         } catch (ClaimMetadataException e) {

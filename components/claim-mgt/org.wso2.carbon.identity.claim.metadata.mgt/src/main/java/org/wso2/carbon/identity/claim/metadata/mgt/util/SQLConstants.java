@@ -103,5 +103,4 @@ public class SQLConstants {
     public static final String DELETE_IDN_CLAIM_MAPPED_ATTRIBUTE = "DELETE FROM IDN_CLAIM_MAPPED_ATTRIBUTE WHERE " +
             "USER_STORE_DOMAIN_NAME=? AND TENANT_ID=?";
 
-    public static final int UNIQUE_CONTRAINT_VIOLATION_ERROR_CODE = 2627;
 }
