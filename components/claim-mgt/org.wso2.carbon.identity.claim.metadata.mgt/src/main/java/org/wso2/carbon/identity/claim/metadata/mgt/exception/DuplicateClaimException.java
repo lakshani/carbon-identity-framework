@@ -22,7 +22,7 @@ package org.wso2.carbon.identity.claim.metadata.mgt.exception;
  * Exception class to represent efforts to persist duplicate claims
  */
 
-public class DuplicateClaimException extends ClaimMetadataException{
+public class DuplicateClaimException extends ClaimMetadataException {
 
     public DuplicateClaimException(String errorDescription) {
 

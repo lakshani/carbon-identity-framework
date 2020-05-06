@@ -104,14 +104,15 @@ public class ClaimDAO {
                 claimId = rs.getInt(1);
             }
         } catch (SQLException e) {
-            if (isSQLIntegrityConstraintViolation(e) && isClaimAlreadyPersisted(connection, claimDialectURI, claimURI,
-                    tenantId)) {
-                String msg = String.format("Claim %s in dialect %s is already persisted", claimURI, claimDialectURI);
-                throw new DuplicateClaimException(msg, e);
-            } else {
-                String msg = String.format("Error while adding claim %s to dialect %s", claimURI, claimDialectURI);
-                throw new ClaimMetadataException(msg, e);
+            if (isSQLIntegrityConstraintViolation(e)) {
+                IdentityDatabaseUtil.rollbackTransaction(connection);
+                if (isClaimAlreadyPersisted(connection, claimDialectURI, claimURI, tenantId)) {
+                    String msg = String.format("Claim %s in dialect %s is already persisted", claimURI, claimDialectURI);
+                    throw new DuplicateClaimException(msg, e);
+                }
             }
+            String msg = String.format("Error while adding claim %s to dialect %s", claimURI, claimDialectURI);
+            throw new ClaimMetadataException(msg, e);
         } finally {
             IdentityDatabaseUtil.closeResultSet(rs);
             IdentityDatabaseUtil.closeStatement(prepStmt);
@@ -247,16 +248,15 @@ public class ClaimDAO {
      * Existence of a valid claim ID (id > 0) for given claimDialectURI and claimURI pair, verifies that the claim
      * is already persisted.
      *
-     * @param connection Connection
+     * @param connection      Connection
      * @param claimDialectURI DialectURI
-     * @param claimURI ClaimURI
-     * @param tenantId TenantID
+     * @param claimURI        ClaimURI
+     * @param tenantId        TenantID
      * @return true if the claim is already persisted in DB
      * @throws ClaimMetadataException
      */
     private boolean isClaimAlreadyPersisted(Connection connection, String claimDialectURI, String claimURI, int tenantId)
             throws ClaimMetadataException {
-
         return getClaimId(connection, claimDialectURI, claimURI, tenantId) > 0;
     }
 
@@ -266,12 +266,13 @@ public class ClaimDAO {
      * SQLIntegrityConstraintViolationException. So for mssql we are checking the error code of the
      * exception thrown to identify constrant violation errors in mssql.
      *
-     * @param e SQL exception caught
-     * @return true if the exeption caught is an SQL Integrity Constraint violation
+     * @param e  SQL exception caught
+     * @return   true if the exeption caught is an SQL Integrity Constraint violation
      */
     private boolean isSQLIntegrityConstraintViolation(SQLException e) {
 
         return e instanceof SQLIntegrityConstraintViolationException
-                || e.getErrorCode() == ClaimConstants.UNIQUE_CONTRAINT_VIOLATION_ERROR_CODE;
+                || e.getErrorCode() == ClaimConstants.UNIQUE_CONTRAINT_VIOLATION_ERROR_CODE
+                || e.getSQLState().equals(ClaimConstants.UNIQUE_CONTRAINT_VIOLATION_POSTGRES_ERROR_CODE);
     }
 }

@@ -159,8 +159,8 @@ public class ClaimDialectDAO {
      *
      * @param connection Connection
      * @param dialectURI DialectURI
-     * @param tenantId TenantID
-     * @return True if dialect is alredy persisted in DB
+     * @param tenantId   TenantID
+     * @return True if dialect is already persisted in DB
      * @throws ClaimMetadataException
      */
     private boolean isDialectExists(Connection connection, String dialectURI, int tenantId)
@@ -188,6 +188,7 @@ public class ClaimDialectDAO {
     private boolean isSQLIntegrityConstraintViolation(SQLException e) {
 
         return e instanceof SQLIntegrityConstraintViolationException
-                || e.getErrorCode() == ClaimConstants.UNIQUE_CONTRAINT_VIOLATION_ERROR_CODE;
+                || e.getErrorCode() == ClaimConstants.UNIQUE_CONTRAINT_VIOLATION_ERROR_CODE
+                || e.getSQLState().equals(ClaimConstants.UNIQUE_CONTRAINT_VIOLATION_POSTGRES_ERROR_CODE);
     }
 }
