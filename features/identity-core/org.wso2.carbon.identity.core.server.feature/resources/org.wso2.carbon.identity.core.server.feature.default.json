@@ -488,5 +488,7 @@
 
   "user_filtering.show_display_name_of_user": false,
 
-  "analytics.publish_password_grant_logins": false
+  "analytics.publish_password_grant_logins": false,
+
+  "continue_on_claim_handling_error": true
 }
