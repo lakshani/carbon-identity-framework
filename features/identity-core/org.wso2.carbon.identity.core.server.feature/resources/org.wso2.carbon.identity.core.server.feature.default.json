@@ -490,5 +490,5 @@
 
   "analytics.publish_password_grant_logins": false,
 
-  "continue_on_claim_handling_error": true
+  "continue_on_claim_handling_error.enable": true
 }
