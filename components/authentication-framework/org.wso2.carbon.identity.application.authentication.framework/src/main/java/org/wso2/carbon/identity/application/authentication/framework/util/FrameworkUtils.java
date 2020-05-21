@@ -166,7 +166,7 @@ public class FrameworkUtils {
     private static final String ALREADY_WRITTEN_PROPERTY = "AlreadyWritten";
 
     // Configuration patch in the Identity.xml.
-    private static final String CONTINUE_ON_CLAIM_HANDLING_ERROR = "ContinueOnClaimHandlingError";
+    private static final String CONTINUE_ON_CLAIM_HANDLING_ERROR = "ContinueOnClaimHandlingError.enable";
 
 
     private FrameworkUtils() {
