@@ -747,6 +747,10 @@
                     <Enable>true</Enable>
                     <MaxFailedAttempts>2</MaxFailedAttempts>
                 </ReCaptcha>
+                 <Forced>
+                    <Enable>false</Enable>
+                    <MinAnswers></MinAnswers>
+                </Forced>
             </Password>
             <Answer>
                 <Regex>.*</Regex>

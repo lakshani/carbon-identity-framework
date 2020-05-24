@@ -910,6 +910,10 @@
                     <Enable>{{identity_mgt.password_reset_challenge_questions.enable_recaptcha}}</Enable>
                     <MaxFailedAttempts>{{identity_mgt.password_reset_challenge_questions.failures_before_recaptcha}}</MaxFailedAttempts>
                 </ReCaptcha>
+                <Forced>
+                    <Enable>{{identity_mgt.forced_challenge_questions.enable_forced_challenge_questions}}</Enable>
+                    <MinAnswers>{{identity_mgt.forced_challenge_questions.min_required_answers}}</MinAnswers>
+                </Forced>
             </Password>
             <Answer>
                 <Regex>{{identity_mgt.password_reset_challenge_questions.answer_regex}}</Regex>
