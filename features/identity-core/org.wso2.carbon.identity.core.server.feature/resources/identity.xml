@@ -749,13 +749,13 @@
                 </ReCaptcha>
                  <Forced>
                     <Enable>false</Enable>
-                    <MinAnswers></MinAnswers>
                 </Forced>
             </Password>
             <Answer>
                 <Regex>.*</Regex>
                 <Uniqueness>false</Uniqueness>
             </Answer>
+            <MinQuestionsToAnswer></MinQuestionsToAnswer>
         </Question>
         <ExpiryTime>1440</ExpiryTime>
         <NotifySuccess>false</NotifySuccess>
