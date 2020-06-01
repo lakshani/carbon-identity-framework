@@ -302,10 +302,8 @@ public class CacheClearingUserOperationListener extends AbstractIdentityUserOper
 
         CarbonAttributeFinder finder = EntitlementEngine.getInstance().getCarbonAttributeFinder();
         if (finder != null) {
+            // Decision cache is cleared within clearAttributeCache.
             finder.clearAttributeCache();
-            // we need to invalidate policy cache as well. Decision cache is cleared within
-            // clearAttributeCache.
-            EntitlementEngine.getInstance().invalidatePolicyCache();
         } else {
             // Return if no finders are found
             return;
