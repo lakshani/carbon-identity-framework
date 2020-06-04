@@ -23,6 +23,8 @@ package org.wso2.carbon.identity.user.feature.mgt;
  */
 public class UserFeatureMgtConstants {
 
+    public static final String ENABLE_PER_USER_FEATURE_LOCKING = "EnablePerUserFeatureLocking";
+
     /**
      * SQL Query definitions.
      */

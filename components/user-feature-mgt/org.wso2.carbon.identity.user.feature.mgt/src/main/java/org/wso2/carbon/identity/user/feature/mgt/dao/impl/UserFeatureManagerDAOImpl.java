@@ -40,13 +40,7 @@ public class UserFeatureManagerDAOImpl implements UserFeatureManagerDAO {
     private static final Log log = LogFactory.getLog(UserFeatureManagerDAOImpl.class.getName());
 
     /**
-     * Adds a new feature mapping against a user.
-     *
-     * @param userId            Unique identifier of the user.
-     * @param tenantId          Unique identifier for the tenant domain.
-     * @param featureId         Identifier of the the feature.
-     * @param featureLockStatus {@link FeatureLockStatus} to add.
-     * @throws UserFeatureManagementServerException If error occurs while adding feature mapping against a user.
+     * {@inheritDoc}
      */
     @Override
     public void addFeatureLockForUser(String userId, int tenantId, String featureId,
@@ -80,13 +74,7 @@ public class UserFeatureManagerDAOImpl implements UserFeatureManagerDAO {
     }
 
     /**
-     * Returns the feature lock status given the user id, tenant id and the feature id.
-     *
-     * @param userId    Unique identifier of the user.
-     * @param tenantId  Unique identifier for the tenant domain.
-     * @param featureId Identifier of the the feature.
-     * @return {@link FeatureLockStatus}.
-     * @throws UserFeatureManagementServerException If error occurs while fetching the {@link FeatureLockStatus}.
+     * {@inheritDoc}
      */
     @Override
     public FeatureLockStatus getFeatureLockStatus(String userId, int tenantId, String featureId)
@@ -99,10 +87,10 @@ public class UserFeatureManagerDAOImpl implements UserFeatureManagerDAO {
                     jdbcTemplate.fetchSingleRecord(UserFeatureMgtConstants.SqlQueries.GET_FEATURE_LOCK_STATUS,
                             ((resultSet, i) -> {
                                 FeatureLockStatus featureResult = new FeatureLockStatus(
-                                        resultSet.getBoolean(1),
-                                        resultSet.getLong(2),
-                                        resultSet.getString(3),
-                                        resultSet.getString(4));
+                                        resultSet.getBoolean("IS_FEATURE_LOCKED"),
+                                        resultSet.getLong("FEATURE_UNLOCK_TIME"),
+                                        resultSet.getString("FEATURE_LOCK_REASON_CODE"),
+                                        resultSet.getString("FEATURE_LOCK_REASON"));
                                 return featureResult;
                             }),
                             preparedStatement -> {
@@ -122,13 +110,7 @@ public class UserFeatureManagerDAOImpl implements UserFeatureManagerDAO {
     }
 
     /**
-     * Updates a user-feature mapping given the user id, tenant id and the feature id by replacing the existing mapping.
-     *
-     * @param userId            Unique identifier of the user.
-     * @param tenantId          Unique identifier for the tenant domain.
-     * @param featureId         Identifier of the the feature.
-     * @param featureLockStatus Updated featureLockStatus object.
-     * @throws UserFeatureManagementServerException If error occurs while updating the {@link FeatureLockStatus}.
+     * {@inheritDoc}
      */
     @Override
     public void updateLockStatusForUser(String userId, int tenantId, String featureId,
@@ -154,12 +136,7 @@ public class UserFeatureManagerDAOImpl implements UserFeatureManagerDAO {
     }
 
     /**
-     * Deletes a user-feature mapping given the user id, tenant id and the feature id.
-     *
-     * @param userId    Unique identifier of the user.
-     * @param tenantId  Unique identifier for the tenant domain.
-     * @param featureId Identifier of the the feature.
-     * @throws UserFeatureManagementServerException If error occurs while deleting the user-feature mapping.
+     * {@inheritDoc}
      */
     @Override
     public void deleteFeatureLockEntry(String userId, int tenantId, String featureId)

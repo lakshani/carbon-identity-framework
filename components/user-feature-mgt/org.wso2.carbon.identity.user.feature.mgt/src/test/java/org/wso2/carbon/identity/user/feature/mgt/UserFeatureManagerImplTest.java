@@ -172,7 +172,7 @@ public class UserFeatureManagerImplTest extends PowerMockTestCase {
                 when(dataSource.getConnection()).thenReturn(spyConnection);
                 try {
                     userFeaturePropertyDAO.addProperties(userId, tenantId, featureId, properties);
-                    assertEquals(userFeatureManager.getFeatureLockProperties(userId, tenantId, featureId), properties);
+                    assertEquals(userFeatureManager.getUserFeatureProperties(userId, tenantId, featureId), properties);
                 } catch (UserFeatureManagementException e) {
                     log.error(String.format("Error while selecting feature: %s", featureId), e);
                 }
@@ -257,7 +257,7 @@ public class UserFeatureManagerImplTest extends PowerMockTestCase {
             when(dataSource.getConnection()).thenReturn(spyConnection);
 
             userFeaturePropertyDAO.addProperties(userId, tenantId, featureId, properties);
-            userFeatureManager.setFeatureLockProperties(userId, tenantId, featureId, propertiesToUpdate);
+            userFeatureManager.setUserFeatureProperties(userId, tenantId, featureId, propertiesToUpdate);
             Map<String, String> featureLockProperties =
                     userFeaturePropertyDAO.getAllProperties(userId, tenantId, featureId);
 

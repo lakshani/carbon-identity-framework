@@ -193,7 +193,7 @@ public class UserFeaturePropertyDAOImplTest extends PowerMockTestCase {
         try (Connection connection = getConnection()) {
             Connection spyConnection = spyConnection(connection);
             when(dataSource.getConnection()).thenReturn(spyConnection);
-            userFeatureManager.setFeatureLockProperties(userId, tenantId, featureId, properties);
+            userFeatureManager.setUserFeatureProperties(userId, tenantId, featureId, properties);
             userFeaturePropertyDAO.deleteAllFeatureLockProperties(userId, tenantId, featureId);
             Map<String, String> featureLockProperties =
                     userFeaturePropertyDAO.getAllProperties(userId, tenantId, featureId);

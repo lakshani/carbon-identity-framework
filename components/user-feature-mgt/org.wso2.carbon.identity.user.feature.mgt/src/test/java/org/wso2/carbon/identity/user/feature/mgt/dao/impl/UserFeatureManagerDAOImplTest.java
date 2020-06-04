@@ -31,7 +31,6 @@ import org.testng.annotations.ObjectFactory;
 import org.testng.annotations.Test;
 import org.wso2.carbon.identity.core.util.IdentityDatabaseUtil;
 import org.wso2.carbon.identity.user.feature.mgt.dao.UserFeatureManagerDAO;
-import org.wso2.carbon.identity.user.feature.mgt.dao.UserFeatureManagerDAOFactory;
 import org.wso2.carbon.identity.user.feature.mgt.exception.UserFeatureManagementServerException;
 import org.wso2.carbon.identity.user.feature.mgt.model.FeatureLockStatus;
 import org.wso2.carbon.identity.user.feature.mgt.util.TestUtils;
@@ -51,8 +50,7 @@ import static org.testng.Assert.assertNull;
 public class UserFeatureManagerDAOImplTest extends PowerMockTestCase {
 
     private static final Log log = LogFactory.getLog(UserFeatureManagerDAOImplTest.class);
-    private static UserFeatureManagerDAOFactory userFeatureManagerDAOFactory = new UserFeatureManagerDAOFactory();
-    private UserFeatureManagerDAO userFeatureManagerDAO = userFeatureManagerDAOFactory.createFeatureManagerDAO();
+    private UserFeatureManagerDAO userFeatureManagerDAO = new UserFeatureManagerDAOImpl();
 
     @BeforeMethod
     public void setUp() throws Exception {

@@ -53,7 +53,7 @@ public interface UserFeatureManager {
      * @return The properties of the user-feature mapping.
      * @throws UserFeatureManagementServerException
      */
-    Map<String, String> getFeatureLockProperties(String userId, int tenantId, String featureId)
+    Map<String, String> getUserFeatureProperties(String userId, int tenantId, String featureId)
             throws UserFeatureManagementServerException;
 
     /**
@@ -66,7 +66,7 @@ public interface UserFeatureManager {
      * @param featureLockProperties The properties of the user-feature mapping.
      * @throws UserFeatureManagementServerException
      */
-    void setFeatureLockProperties(String userId, int tenantId, String featureId,
+    void setUserFeatureProperties(String userId, int tenantId, String featureId,
                                   Map<String, String> featureLockProperties)
             throws UserFeatureManagementServerException;
 

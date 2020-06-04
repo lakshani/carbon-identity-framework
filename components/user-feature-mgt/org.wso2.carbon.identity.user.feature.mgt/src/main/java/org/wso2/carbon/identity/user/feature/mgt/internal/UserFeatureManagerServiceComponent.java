@@ -39,9 +39,9 @@ import org.wso2.carbon.identity.user.feature.mgt.UserFeatureManagerImpl;
 )
 public class UserFeatureManagerServiceComponent {
 
-    private static Log log = LogFactory.getLog(UserFeatureManagerServiceComponent.class);
+    private static final Log log = LogFactory.getLog(UserFeatureManagerServiceComponent.class);
 
-    private ServiceRegistration featureLockMgtService;
+    private ServiceRegistration userFeatureMgtService;
 
     /**
      * Register User Feature Manager as an OSGi service.
@@ -54,7 +54,7 @@ public class UserFeatureManagerServiceComponent {
         try {
             BundleContext bundleContext = componentContext.getBundleContext();
             UserFeatureManager userFeatureManager = new UserFeatureManagerImpl();
-            featureLockMgtService = bundleContext.registerService(UserFeatureManager.class, userFeatureManager, null);
+            userFeatureMgtService = bundleContext.registerService(UserFeatureManager.class, userFeatureManager, null);
             if (log.isDebugEnabled()) {
                 log.debug("User Feature Manager bundle is activated.");
             }
@@ -67,7 +67,7 @@ public class UserFeatureManagerServiceComponent {
     protected void deactivate(ComponentContext componentContext) {
 
         BundleContext bundleContext = componentContext.getBundleContext();
-        bundleContext.ungetService(featureLockMgtService.getReference());
+        bundleContext.ungetService(userFeatureMgtService.getReference());
         if (log.isDebugEnabled()) {
             log.debug("User Feature Manager bundle is deactivated.");
         }

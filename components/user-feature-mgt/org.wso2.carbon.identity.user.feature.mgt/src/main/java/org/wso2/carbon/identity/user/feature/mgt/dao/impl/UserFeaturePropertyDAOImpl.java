@@ -40,12 +40,7 @@ public class UserFeaturePropertyDAOImpl implements UserFeaturePropertyDAO {
     private static final Log log = LogFactory.getLog(UserFeaturePropertyDAOImpl.class.getName());
 
     /**
-     * Adds a new feature lock properties.
-     *
-     * @param userId          Unique identifier of the user.
-     * @param tenantId        Unique identifier for the tenant domain.
-     * @param featureId       Identifier of the feature.
-     * @param propertiesToAdd Map of properties to add.
+     * {@inheritDoc}
      */
     @Override
     public void addProperties(String userId, int tenantId, String featureId, Map<String, String> propertiesToAdd)
@@ -53,21 +48,21 @@ public class UserFeaturePropertyDAOImpl implements UserFeaturePropertyDAO {
 
         JdbcTemplate jdbcTemplate = JdbcUtils.getNewTemplate();
         for (Map.Entry<String, String> entry : propertiesToAdd.entrySet()) {
-            String k = entry.getKey();
-            String v = entry.getValue();
+            String propertyName = entry.getKey();
+            String propertyValue = entry.getValue();
             try {
                 jdbcTemplate.executeUpdate(UserFeatureMgtConstants.SqlQueries.INSERT_PROPERTY, preparedStatement -> {
                     preparedStatement.setString(1, UUID.randomUUID().toString());
                     preparedStatement.setString(2, userId);
                     preparedStatement.setInt(3, tenantId);
                     preparedStatement.setString(4, featureId);
-                    preparedStatement.setString(5, k);
-                    preparedStatement.setString(6, v);
+                    preparedStatement.setString(5, propertyName);
+                    preparedStatement.setString(6, propertyValue);
                 });
             } catch (DataAccessException e) {
                 String message =
                         String.format("Error occurred while adding the property: %s for feature: %s in user: %s," +
-                                " tenant id: %d", k, featureId, userId, tenantId);
+                                " tenant id: %d", propertyName, featureId, userId, tenantId);
                 if (log.isDebugEnabled()) {
                     log.debug(message, e);
                 }
@@ -77,13 +72,7 @@ public class UserFeaturePropertyDAOImpl implements UserFeaturePropertyDAO {
     }
 
     /**
-     * Returns all the properties for a user-feature mapping, given the user id, tenant id, feature id and the property
-     * name.
-     *
-     * @param userId    Unique identifier of the user.
-     * @param tenantId  Unique identifier for the tenant domain.
-     * @param featureId Identifier of the feature.
-     * @return An array of properties.
+     * {@inheritDoc}
      */
     @Override
     public Map<String, String> getAllProperties(String userId, int tenantId, String featureId)
@@ -112,13 +101,7 @@ public class UserFeaturePropertyDAOImpl implements UserFeaturePropertyDAO {
     }
 
     /**
-     * Updates a property for a user-feature mapping, given the user id, tenant id, feature id and the property name,
-     * by replacing the existing property.
-     *
-     * @param userId             Unique identifier of the user.
-     * @param tenantId           Unique identifier for the tenant domain.
-     * @param featureId          Identifier of the feature.
-     * @param propertiesToUpdate Map of properties to be updated.
+     * {@inheritDoc}
      */
     @Override
     public void updateProperties(String userId, int tenantId, String featureId, Map<String, String> propertiesToUpdate)
@@ -127,21 +110,21 @@ public class UserFeaturePropertyDAOImpl implements UserFeaturePropertyDAO {
         JdbcTemplate jdbcTemplate = JdbcUtils.getNewTemplate();
 
         for (Map.Entry<String, String> entry : propertiesToUpdate.entrySet()) {
-            String k = entry.getKey();
-            String v = entry.getValue();
+            String propertyName = entry.getKey();
+            String propertyValue = entry.getValue();
             try {
                 jdbcTemplate
                         .executeUpdate(UserFeatureMgtConstants.SqlQueries.UPDATE_PROPERTY_VALUE, (preparedStatement -> {
-                            preparedStatement.setString(1, v);
+                            preparedStatement.setString(1, propertyValue);
                             preparedStatement.setString(2, userId);
                             preparedStatement.setInt(3, tenantId);
                             preparedStatement.setString(4, featureId);
-                            preparedStatement.setString(5, k);
+                            preparedStatement.setString(5, propertyName);
                         }));
             } catch (DataAccessException e) {
                 String message =
                         String.format("Error occurred while updating the feature lock property: %s for feature " +
-                                "Id: %s, user Id: %s and tenantId: %d.", k, featureId, userId, tenantId);
+                                "Id: %s, user Id: %s and tenantId: %d.", propertyName, featureId, userId, tenantId);
                 if (log.isDebugEnabled()) {
                     log.debug(message, e);
                 }
@@ -151,30 +134,26 @@ public class UserFeaturePropertyDAOImpl implements UserFeaturePropertyDAO {
     }
 
     /**
-     * Deletes a property for a user-feature mapping given the user id, tenant id, feature id and the property name.
-     *
-     * @param userId             Unique identifier of the user.
-     * @param tenantId           Unique identifier for the tenant domain.
-     * @param featureId          Identifier of the feature.
-     * @param propertiesToDelete Set of property names to be deleted.
+     * {@inheritDoc}
      */
     @Override
     public void deleteProperties(String userId, int tenantId, String featureId, Set<String> propertiesToDelete)
             throws UserFeatureManagementServerException {
 
         JdbcTemplate jdbcTemplate = JdbcUtils.getNewTemplate();
-        for (String k : propertiesToDelete) {
+        for (String propertyName : propertiesToDelete) {
             try {
                 jdbcTemplate.executeUpdate(UserFeatureMgtConstants.SqlQueries.DELETE_PROPERTY, preparedStatement -> {
                     preparedStatement.setString(1, userId);
                     preparedStatement.setInt(2, tenantId);
                     preparedStatement.setString(3, featureId);
-                    preparedStatement.setString(4, k);
+                    preparedStatement.setString(4, propertyName);
                 });
             } catch (DataAccessException e) {
                 String message =
                         String.format("Error occurred while deleting feature lock property from DB for feature " +
-                                "Id: %s, property: %s, user Id: %s and tenant Id: %d.", featureId, k, userId, tenantId);
+                                        "Id: %s, property: %s, user Id: %s and tenant Id: %d.", featureId, propertyName,
+                                userId, tenantId);
                 if (log.isDebugEnabled()) {
                     log.debug(message, e);
                 }
@@ -184,12 +163,7 @@ public class UserFeaturePropertyDAOImpl implements UserFeaturePropertyDAO {
     }
 
     /**
-     * Deletes all the properties for a user-feature mapping given the user id, tenant id, feature id and the property
-     * name.
-     *
-     * @param userId    Unique identifier of the user.
-     * @param tenantId  Unique identifier for the tenant domain.
-     * @param featureId Identifier of the feature.
+     * {@inheritDoc}
      */
     @Override
     public void deleteAllFeatureLockProperties(String userId, int tenantId, String featureId)

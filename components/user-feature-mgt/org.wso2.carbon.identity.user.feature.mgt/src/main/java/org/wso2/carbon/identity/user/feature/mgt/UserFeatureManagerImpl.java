@@ -19,9 +19,10 @@
 package org.wso2.carbon.identity.user.feature.mgt;
 
 import org.apache.commons.collections.MapUtils;
+import org.wso2.carbon.identity.core.util.IdentityUtil;
 import org.wso2.carbon.identity.user.feature.mgt.dao.UserFeatureManagerDAO;
-import org.wso2.carbon.identity.user.feature.mgt.dao.UserFeatureManagerDAOFactory;
 import org.wso2.carbon.identity.user.feature.mgt.dao.UserFeaturePropertyDAO;
+import org.wso2.carbon.identity.user.feature.mgt.dao.impl.UserFeatureManagerDAOImpl;
 import org.wso2.carbon.identity.user.feature.mgt.dao.impl.UserFeaturePropertyDAOImpl;
 import org.wso2.carbon.identity.user.feature.mgt.exception.UserFeatureManagementException;
 import org.wso2.carbon.identity.user.feature.mgt.exception.UserFeatureManagementServerException;
@@ -36,24 +37,20 @@ import java.util.Set;
  */
 public class UserFeatureManagerImpl implements UserFeatureManager {
 
-    private UserFeatureManagerDAOFactory userFeatureManagerDAOFactory = new UserFeatureManagerDAOFactory();
-    private UserFeatureManagerDAO userFeatureManagerDAO = userFeatureManagerDAOFactory.createFeatureManagerDAO();
+    private UserFeatureManagerDAO userFeatureManagerDAO = new UserFeatureManagerDAOImpl();
     private UserFeaturePropertyDAO userFeaturePropertyDAO = new UserFeaturePropertyDAOImpl();
+    private boolean perUserFeatureLocking = isPerUserFeatureLockingEnabled();
 
     /**
-     * Returns the status of the feature. Whether the feature is locked or unlocked, the unlock time, the unlock code
-     * and reason, given the feature id, the user id and the tenant id.
-     *
-     * @param userId    Unique identifier of the user.
-     * @param tenantId  Unique identifier for the tenant domain.
-     * @param featureId Identifier of the the feature.
-     * @return The status of the feature.
-     * @throws UserFeatureManagementException
+     * {@inheritDoc}
      */
     @Override
     public FeatureLockStatus getFeatureLockStatusForUser(String userId, int tenantId, String featureId)
-            throws UserFeatureManagementException {
+            throws UserFeatureManagementServerException {
 
+        if (!perUserFeatureLocking) {
+            throw new UnsupportedOperationException("Per-user feature locking is not enabled.");
+        }
         FeatureLockStatus featureLockStatus = userFeatureManagerDAO.getFeatureLockStatus(userId, tenantId, featureId);
         if (featureLockStatus == null) {
             return FeatureLockStatus.UNLOCKED_STATUS;
@@ -67,62 +64,48 @@ public class UserFeatureManagerImpl implements UserFeatureManager {
     }
 
     /**
-     * Returns the properties of the user-feature mapping. These properties may include invalid attempts counts,
-     * feature lockout counts, etc.
-     *
-     * @param userId    Unique identifier of the user.
-     * @param tenantId  Unique identifier for the tenant domain.
-     * @param featureId Identifier of the the feature.
-     * @return The properties of the user-feature mapping.
-     * @throws UserFeatureManagementServerException
+     * {@inheritDoc}
      */
     @Override
-    public Map<String, String> getFeatureLockProperties(String userId, int tenantId, String featureId)
+    public Map<String, String> getUserFeatureProperties(String userId, int tenantId, String featureId)
             throws UserFeatureManagementServerException {
 
+        if (!perUserFeatureLocking) {
+            throw new UnsupportedOperationException("Per-user feature locking is not enabled.");
+        }
         return userFeaturePropertyDAO.getAllProperties(userId, tenantId, featureId);
     }
 
     /**
-     * Sets the properties of the user-feature mapping. These properties may include invalid attempts counts,
-     * feature lockout counts, etc.
-     *
-     * @param userId                Unique identifier of the user.
-     * @param tenantId              Unique identifier for the tenant domain.
-     * @param featureId             Identifier of the the feature.
-     * @param featureLockProperties The properties of the user-feature mapping.
-     * @throws UserFeatureManagementServerException
+     * {@inheritDoc}
      */
     @Override
-    public void setFeatureLockProperties(String userId, int tenantId, String featureId,
+    public void setUserFeatureProperties(String userId, int tenantId, String featureId,
                                          Map<String, String> featureLockProperties)
             throws UserFeatureManagementServerException {
 
-        Map<String, String> existingProperties = getFeatureLockProperties(userId, tenantId, featureId);
+        if (!perUserFeatureLocking) {
+            throw new UnsupportedOperationException("Per-user feature locking is not enabled.");
+        }
+        Map<String, String> existingProperties = getUserFeatureProperties(userId, tenantId, featureId);
         if (MapUtils.isNotEmpty(featureLockProperties)) {
-            handleFeatureLockProperties(featureLockProperties, existingProperties, userId, tenantId, featureId);
+            addOrUpdateProperties(featureLockProperties, existingProperties, userId, tenantId, featureId);
         }
     }
 
     /**
-     * Locks a feature with feature-lock properties given the feature id, user id, tenant id, feature lock time and the
-     * feature lock code.
-     *
-     * @param userId                Unique identifier of the user.
-     * @param tenantId              Unique identifier for the tenant domain.
-     * @param featureId             Identifier of the the feature.
-     * @param timeToLock            The lock time for the feature in milliseconds. Set -1 to lock indefinitely.
-     * @param featureLockReasonCode The feature lock code.
-     * @param featureLockReason     The feature lock reason.
-     * @throws UserFeatureManagementException
+     * {@inheritDoc}
      */
     @Override
     public void lockFeatureForUser(String userId, int tenantId, String featureId, long timeToLock,
                                    String featureLockReasonCode, String featureLockReason)
             throws UserFeatureManagementException {
 
+        if (!perUserFeatureLocking) {
+            throw new UnsupportedOperationException("Per-user feature locking is not enabled.");
+        }
         long unlockTime = Long.MAX_VALUE;
-        if (timeToLock != -1) {
+        if (timeToLock >= 0) {
             unlockTime = System.currentTimeMillis() + timeToLock;
         }
 
@@ -151,58 +134,49 @@ public class UserFeatureManagerImpl implements UserFeatureManager {
     }
 
     /**
-     * Unlocks a feature given the feature id, the user id and the tenant id.
-     *
-     * @param userId    Unique identifier of the user.
-     * @param tenantId  Unique identifier for the tenant domain.
-     * @param featureId Identifier of the the feature.
-     * @throws UserFeatureManagementServerException
+     * {@inheritDoc}
      */
     @Override
     public void unlockFeatureForUser(String userId, int tenantId, String featureId)
             throws UserFeatureManagementServerException {
 
+        if (!perUserFeatureLocking) {
+            throw new UnsupportedOperationException("Per-user feature locking is not enabled.");
+        }
         userFeatureManagerDAO.deleteFeatureLockEntry(userId, tenantId, featureId);
     }
 
     /**
-     * Deletes all the properties that are related to a certain user-feature mapping identified by the user id,
-     * tenant id and the feature id.
-     *
-     * @param userId    Unique identifier of the user.
-     * @param tenantId  Unique identifier for the tenant domain.
-     * @param featureId Identifier of the the feature.
-     * @throws UserFeatureManagementServerException
+     * {@inheritDoc}
      */
     @Override
     public void deleteAllUserFeatureProperties(String userId, int tenantId, String featureId)
             throws UserFeatureManagementServerException {
 
+        if (!perUserFeatureLocking) {
+            throw new UnsupportedOperationException("Per-user feature locking is not enabled.");
+        }
         userFeaturePropertyDAO.deleteAllFeatureLockProperties(userId, tenantId, featureId);
 
     }
 
     /**
-     * Deletes a certain list of properties indicated by the propertiesToDelete set that are related to a certain
-     * user-feature mapping identified by the user id, tenant id and the feature id.
-     *
-     * @param userId             Unique identifier of the user.
-     * @param tenantId           Unique identifier for the tenant domain.
-     * @param featureId          Identifier of the the feature.
-     * @param propertiesToDelete Set of property names to delete.
-     * @throws UserFeatureManagementServerException
+     * {@inheritDoc}
      */
     @Override
     public void deleteUserFeatureProperties(String userId, int tenantId, String featureId,
                                             Set<String> propertiesToDelete)
             throws UserFeatureManagementServerException {
 
+        if (!perUserFeatureLocking) {
+            throw new UnsupportedOperationException("Per-user feature locking is not enabled.");
+        }
         userFeaturePropertyDAO.deleteProperties(userId, tenantId, featureId, propertiesToDelete);
 
     }
 
-    private void handleFeatureLockProperties(Map<String, String> newProperties, Map<String, String> oldProperties,
-                                             String userId, int tenantId, String featureId)
+    private void addOrUpdateProperties(Map<String, String> newProperties, Map<String, String> oldProperties,
+                                       String userId, int tenantId, String featureId)
             throws UserFeatureManagementServerException {
 
         Map<String, String> propertiesToAdd = new HashMap<String, String>();
@@ -225,5 +199,16 @@ public class UserFeatureManagerImpl implements UserFeatureManager {
         if (MapUtils.isNotEmpty(propertiesToUpdate)) {
             userFeaturePropertyDAO.updateProperties(userId, tenantId, featureId, propertiesToUpdate);
         }
+    }
+
+    /**
+     * Checks whether the per-user feature locking is enabled.
+     *
+     * @return true if the config is set to true, false otherwise.
+     */
+    private static boolean isPerUserFeatureLockingEnabled() {
+
+        return Boolean
+                .parseBoolean(IdentityUtil.getProperty(UserFeatureMgtConstants.ENABLE_PER_USER_FEATURE_LOCKING));
     }
 }
