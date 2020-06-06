@@ -76,7 +76,6 @@
         <module>features/functions-library-mgt</module>
         <module>features/template-mgt</module>
         <module>features/configuration-mgt</module>
-        <module>features/user-feature-mgt</module>
     </modules>
 
     <repositories>

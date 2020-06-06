@@ -39,7 +39,8 @@ public class UserFeatureManagerImpl implements UserFeatureManager {
 
     private UserFeatureManagerDAO userFeatureManagerDAO = new UserFeatureManagerDAOImpl();
     private UserFeaturePropertyDAO userFeaturePropertyDAO = new UserFeaturePropertyDAOImpl();
-    private boolean perUserFeatureLocking = isPerUserFeatureLockingEnabled();
+    private boolean perUserFeatureLocking =
+            Boolean.parseBoolean(IdentityUtil.getProperty(UserFeatureMgtConstants.ENABLE_PER_USER_FEATURE_LOCKING));
 
     /**
      * {@inheritDoc}
@@ -199,16 +200,5 @@ public class UserFeatureManagerImpl implements UserFeatureManager {
         if (MapUtils.isNotEmpty(propertiesToUpdate)) {
             userFeaturePropertyDAO.updateProperties(userId, tenantId, featureId, propertiesToUpdate);
         }
-    }
-
-    /**
-     * Checks whether the per-user feature locking is enabled.
-     *
-     * @return true if the config is set to true, false otherwise.
-     */
-    private static boolean isPerUserFeatureLockingEnabled() {
-
-        return Boolean
-                .parseBoolean(IdentityUtil.getProperty(UserFeatureMgtConstants.ENABLE_PER_USER_FEATURE_LOCKING));
     }
 }

@@ -26,8 +26,14 @@ import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
+import org.wso2.carbon.identity.configuration.mgt.core.ConfigurationManager;
+import org.wso2.carbon.identity.core.util.IdentityCoreInitializedEvent;
 import org.wso2.carbon.identity.user.feature.mgt.UserFeatureManager;
 import org.wso2.carbon.identity.user.feature.mgt.UserFeatureManagerImpl;
+import org.wso2.carbon.utils.ConfigurationContextService;
 
 /**
  * OSGi declarative services component which handles registration and un-registration of user feature management
@@ -42,6 +48,7 @@ public class UserFeatureManagerServiceComponent {
     private static final Log log = LogFactory.getLog(UserFeatureManagerServiceComponent.class);
 
     private ServiceRegistration userFeatureMgtService;
+
 
     /**
      * Register User Feature Manager as an OSGi service.
@@ -71,5 +78,22 @@ public class UserFeatureManagerServiceComponent {
         if (log.isDebugEnabled()) {
             log.debug("User Feature Manager bundle is deactivated.");
         }
+    }
+
+    @Reference(
+            name = "identityCoreInitializedEventService",
+            service = IdentityCoreInitializedEvent.class,
+            cardinality = ReferenceCardinality.MANDATORY,
+            policy = ReferencePolicy.DYNAMIC,
+            unbind = "unsetIdentityCoreInitializedEventService"
+    )
+    protected void setIdentityCoreInitializedEventService(IdentityCoreInitializedEvent identityCoreInitializedEvent) {
+        /* reference IdentityCoreInitializedEvent service to guarantee that this component will wait until identity core
+         is started. */
+    }
+
+    protected void unsetIdentityCoreInitializedEventService(IdentityCoreInitializedEvent identityCoreInitializedEvent) {
+        /* reference IdentityCoreInitializedEvent service to guarantee that this component will wait until identity core
+         is started. */
     }
 }
