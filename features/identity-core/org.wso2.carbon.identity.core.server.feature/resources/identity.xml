@@ -537,6 +537,9 @@
 
         <PublishPasswordGrantLogin>false</PublishPasswordGrantLogin>
 
+        <DCRM>
+            <ApplicationRolePermissionRequiredToView>true</ApplicationRolePermissionRequiredToView>
+        </DCRM>
     </OAuth>
 
     <MultifactorAuthentication>
