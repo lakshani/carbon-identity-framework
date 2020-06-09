@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
+import org.powermock.reflect.Whitebox;
 import org.testng.Assert;
 import org.testng.IObjectFactory;
 import org.testng.annotations.AfterMethod;
@@ -63,9 +64,9 @@ public class UserFeatureManagerImplTest extends PowerMockTestCase {
     public void setUp() throws Exception {
 
         TestUtils.initiateH2Base();
-
         DataSource dataSource = mock(DataSource.class);
         TestUtils.mockDataSource(dataSource);
+        Whitebox.setInternalState(UserFeatureManagerImpl.class, "perUserFeatureLocking", true);
 
         try (Connection connection = TestUtils.getConnection()) {
             Connection spyConnection = TestUtils.spyConnection(connection);
@@ -251,7 +252,6 @@ public class UserFeatureManagerImplTest extends PowerMockTestCase {
 
         DataSource dataSource = mock(DataSource.class);
         TestUtils.mockDataSource(dataSource);
-
         try (Connection connection = TestUtils.getConnection()) {
             Connection spyConnection = TestUtils.spyConnection(connection);
             when(dataSource.getConnection()).thenReturn(spyConnection);

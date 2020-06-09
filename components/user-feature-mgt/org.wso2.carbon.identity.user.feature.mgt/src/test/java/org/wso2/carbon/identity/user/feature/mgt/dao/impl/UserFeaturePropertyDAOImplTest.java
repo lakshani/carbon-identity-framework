@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
+import org.powermock.reflect.Whitebox;
 import org.testng.IObjectFactory;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -69,6 +70,7 @@ public class UserFeaturePropertyDAOImplTest extends PowerMockTestCase {
 
         initiateH2Base();
         mockStatic(IdentityDatabaseUtil.class);
+        Whitebox.setInternalState(UserFeatureManagerImpl.class, "perUserFeatureLocking", true);
     }
 
     @AfterMethod

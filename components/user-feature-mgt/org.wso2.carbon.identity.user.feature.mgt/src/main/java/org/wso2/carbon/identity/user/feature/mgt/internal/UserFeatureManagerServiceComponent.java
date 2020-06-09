@@ -29,11 +29,9 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
-import org.wso2.carbon.identity.configuration.mgt.core.ConfigurationManager;
 import org.wso2.carbon.identity.core.util.IdentityCoreInitializedEvent;
 import org.wso2.carbon.identity.user.feature.mgt.UserFeatureManager;
 import org.wso2.carbon.identity.user.feature.mgt.UserFeatureManagerImpl;
-import org.wso2.carbon.utils.ConfigurationContextService;
 
 /**
  * OSGi declarative services component which handles registration and un-registration of user feature management

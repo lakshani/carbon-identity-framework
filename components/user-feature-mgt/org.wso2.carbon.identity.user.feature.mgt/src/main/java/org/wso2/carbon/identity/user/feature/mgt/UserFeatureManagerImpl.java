@@ -39,7 +39,7 @@ public class UserFeatureManagerImpl implements UserFeatureManager {
 
     private UserFeatureManagerDAO userFeatureManagerDAO = new UserFeatureManagerDAOImpl();
     private UserFeaturePropertyDAO userFeaturePropertyDAO = new UserFeaturePropertyDAOImpl();
-    private boolean perUserFeatureLocking =
+    private static boolean perUserFeatureLocking =
             Boolean.parseBoolean(IdentityUtil.getProperty(UserFeatureMgtConstants.ENABLE_PER_USER_FEATURE_LOCKING));
 
     /**
