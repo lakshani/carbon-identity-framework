@@ -55,7 +55,7 @@
         <module>components/template-mgt</module>
         <module>components/configuration-mgt</module>
         <module>components/captcha-mgt</module>
-        <module>components/user-feature-mgt</module>
+        <module>components/user-functionality-mgt</module>
         <module>features/security-mgt</module>
         <module>features/claim-mgt</module>
         <module>features/identity-core</module>
@@ -1317,14 +1317,8 @@
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.identity.framework</groupId>
-                <artifactId>org.wso2.carbon.identity.user.feature.mgt</artifactId>
+                <artifactId>org.wso2.carbon.identity.user.functionality.mgt</artifactId>
                 <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon.identity.framework</groupId>
-                <artifactId>org.wso2.carbon.identity.user.feature.mgt.server.feature</artifactId>
-                <version>${project.version}</version>
-                <type>zip</type>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.identity.framework</groupId>
