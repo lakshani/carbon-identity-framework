@@ -107,7 +107,7 @@ public interface UserFunctionalityManager {
      * @param functionalityIdentifier Identifier of the the functionality.
      * @throws UserFunctionalityManagementServerException
      */
-    void deleteAllProperties(String userId, int tenantId, String functionalityIdentifier)
+    void deleteAllPropertiesForUser(String userId, int tenantId, String functionalityIdentifier)
             throws UserFunctionalityManagementServerException;
 
     /**
@@ -120,6 +120,22 @@ public interface UserFunctionalityManager {
      * @param propertiesToDelete      Set of property names to delete.
      * @throws UserFunctionalityManagementServerException
      */
-    void deleteProperties(String userId, int tenantId, String functionalityIdentifier, Set<String> propertiesToDelete)
-            throws UserFunctionalityManagementServerException;
+    void deletePropertiesForUser(String userId, int tenantId, String functionalityIdentifier,
+                                 Set<String> propertiesToDelete) throws UserFunctionalityManagementServerException;
+
+    /**
+     * Deletes all the user-functionality mappings of a tenant.
+     *
+     * @param tenantId Unique identifier for the tenant domain.
+     * @throws UserFunctionalityManagementServerException
+     */
+    void deleteAllMappingsForTenant(int tenantId);
+
+    /**
+     * Deletes all the per-user functionality properties for a tenant.
+     *
+     * @param tenantId Unique identifier for the tenant domain.
+     * @throws UserFunctionalityManagementServerException
+     */
+    void deleteAllPropertiesForTenant(int tenantId);
 }

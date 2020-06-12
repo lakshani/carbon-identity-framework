@@ -145,7 +145,7 @@ public class UserFunctionalityManagerDAOImpl implements UserFunctionalityManager
      * {@inheritDoc}
      */
     @Override
-    public void deleteFunctionalityLockEntry(String userId, int tenantId, String functionalityIdentifier)
+    public void deleteMappingForUser(String userId, int tenantId, String functionalityIdentifier)
             throws UserFunctionalityManagementServerException {
 
         JdbcTemplate jdbcTemplate = JdbcUtils.getNewTemplate();
@@ -160,6 +160,29 @@ public class UserFunctionalityManagerDAOImpl implements UserFunctionalityManager
             String message = String.format(
                     "Error occurred while deleting functionality from DB for functionality Id: %s, user " +
                             "Id: %s and tenant Id: %d.", functionalityIdentifier, userId, tenantId);
+            if (log.isDebugEnabled()) {
+                log.debug(message, e);
+            }
+            throw new UserFunctionalityManagementServerException(message, e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void deleteAllMappingsForTenant(int tenantId) throws UserFunctionalityManagementServerException {
+
+        JdbcTemplate jdbcTemplate = JdbcUtils.getNewTemplate();
+        try {
+            jdbcTemplate.executeUpdate(
+                    UserFunctionalityMgtConstants.SqlQueries.DELETE_ALL_FUNCTIONALITY_MAPPINGS_FOR_TENANT,
+                    preparedStatement -> {
+                        preparedStatement.setInt(1, tenantId);
+                    });
+        } catch (DataAccessException e) {
+            String message = String.format(
+                    "Error occurred while deleting mappings from DB for tenant Id: %d.", tenantId);
             if (log.isDebugEnabled()) {
                 log.debug(message, e);
             }

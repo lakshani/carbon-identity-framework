@@ -301,10 +301,40 @@ public class UserFunctionalityManagerDAOImplTest extends PowerMockTestCase {
             try {
                 userFunctionalityManagerDAO
                         .addFunctionalityLock("userId", 1, "functionalityIdentifier1", functionalityLockStatus);
-                userFunctionalityManagerDAO.deleteFunctionalityLockEntry("userId", 1, "functionalityIdentifier1");
-                userFunctionalityManagerDAO.deleteFunctionalityLockEntry("userId", 2, "functionalityIdentifier2");
+                userFunctionalityManagerDAO.deleteMappingForUser("userId", 1, "functionalityIdentifier1");
+                userFunctionalityManagerDAO.deleteMappingForUser("userId", 2, "functionalityIdentifier2");
                 assertNull(userFunctionalityManagerDAO
                         .getFunctionalityLockStatus("userId", 1, "functionalityIdentifier1"));
+            } catch (UserFunctionalityManagementServerException e) {
+                log.error("FunctionalityManagementServer Exception", e);
+            }
+        } catch (SQLException e) {
+            //Mock behaviour. Hence ignored.
+        }
+    }
+
+    @Test
+    public void testDeleteAllMappingsForTenant() {
+
+        DataSource dataSource = mock(DataSource.class);
+        TestUtils.mockDataSource(dataSource);
+        String[] functionalityIdentifiers = {"functionality1", "functionality2", "functionality3"};
+        try (Connection connection = TestUtils.getConnection()) {
+            Connection spyConnection = TestUtils.spyConnection(connection);
+            when(dataSource.getConnection()).thenReturn(spyConnection);
+            FunctionalityLockStatus functionalityLockStatus = new FunctionalityLockStatus(false, 0, null, null);
+            try {
+                for (String functionalityIdentifier : functionalityIdentifiers) {
+                    userFunctionalityManagerDAO
+                            .addFunctionalityLock("user", 1, functionalityIdentifier, functionalityLockStatus);
+                }
+                userFunctionalityManagerDAO.deleteAllMappingsForTenant(1);
+
+                for (String functionalityIdentifier : functionalityIdentifiers) {
+                    assertNull(
+                            userFunctionalityManagerDAO.getFunctionalityLockStatus("user", 1, functionalityIdentifier));
+                }
+
             } catch (UserFunctionalityManagementServerException e) {
                 log.error("FunctionalityManagementServer Exception", e);
             }

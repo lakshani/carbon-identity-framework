@@ -37,9 +37,11 @@ import org.wso2.carbon.identity.user.functionality.mgt.exception.UserFunctionali
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -200,7 +202,7 @@ public class UserFunctionalityPropertyDAOImplTest extends PowerMockTestCase {
             Connection spyConnection = spyConnection(connection);
             when(dataSource.getConnection()).thenReturn(spyConnection);
             userFunctionalityManager.setProperties(userId, tenantId, functionalityIdentifier, properties);
-            userFunctionalityPropertyDAO.deleteAllProperties(userId, tenantId, functionalityIdentifier);
+            userFunctionalityPropertyDAO.deleteAllPropertiesForUser(userId, tenantId, functionalityIdentifier);
             Map<String, String> functionalityLockProperties =
                     userFunctionalityPropertyDAO.getAllProperties(userId, tenantId, functionalityIdentifier);
             assertTrue(functionalityLockProperties.isEmpty());
@@ -253,11 +255,42 @@ public class UserFunctionalityPropertyDAOImplTest extends PowerMockTestCase {
             when(dataSource.getConnection()).thenReturn(spyConnection);
             userFunctionalityPropertyDAO.addProperties(userId, tenantId, functionalityIdentifier, properties);
             userFunctionalityPropertyDAO
-                    .deleteProperties(userId, tenantId, functionalityIdentifier, propertiesToDelete);
+                    .deletePropertiesForUser(userId, tenantId, functionalityIdentifier, propertiesToDelete);
             Map<String, String> functionalityLockProperties =
                     userFunctionalityPropertyDAO.getAllProperties(userId, tenantId, functionalityIdentifier);
 
             assertEquals(functionalityLockProperties.keySet(), expected);
+        } catch (SQLException | UserFunctionalityManagementServerException e) {
+            //Mock behaviour. Hence ignored.
+        }
+    }
+
+    @Test
+    public void testDeletePropertiesForTenant() {
+
+        Map<String, String> properties = new HashMap<String, String>() {{
+            put("k1", "v1");
+            put("k2", "v2");
+            put("k3", "v3");
+        }};
+        String[] functionalityIdentifiers = {"functionality1", "functionality2", "functionality3"};
+        DataSource dataSource = mock(DataSource.class);
+        mockDataSource(dataSource);
+
+        try (Connection connection = getConnection()) {
+            Connection spyConnection = spyConnection(connection);
+            when(dataSource.getConnection()).thenReturn(spyConnection);
+            for (String functionalityIdentifier : functionalityIdentifiers) {
+                userFunctionalityPropertyDAO.addProperties("user", 1, functionalityIdentifier, properties);
+            }
+
+            userFunctionalityPropertyDAO.deleteAllPropertiesForTenant(1);
+
+            for (String functionalityIdentifier : functionalityIdentifiers) {
+                Map<String, String> functionalityLockProperties =
+                        userFunctionalityPropertyDAO.getAllProperties("user", 1, functionalityIdentifier);
+                assertEquals(functionalityLockProperties.keySet(), Collections.emptySet());
+            }
         } catch (SQLException | UserFunctionalityManagementServerException e) {
             //Mock behaviour. Hence ignored.
         }

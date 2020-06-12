@@ -72,7 +72,7 @@ public interface UserFunctionalityPropertyDAO {
      * @param functionalityIdentifier Identifier of the functionality.
      * @param propertiesToDelete      Set of property names to be deleted.
      */
-    void deleteProperties(String userId, int tenantId, String functionalityIdentifier, Set<String> propertiesToDelete)
+    void deletePropertiesForUser(String userId, int tenantId, String functionalityIdentifier, Set<String> propertiesToDelete)
             throws UserFunctionalityManagementServerException;
 
     /**
@@ -83,6 +83,14 @@ public interface UserFunctionalityPropertyDAO {
      * @param tenantId                Unique identifier for the tenant domain.
      * @param functionalityIdentifier Identifier of the functionality.
      */
-    void deleteAllProperties(String userId, int tenantId, String functionalityIdentifier)
+    void deleteAllPropertiesForUser(String userId, int tenantId, String functionalityIdentifier)
             throws UserFunctionalityManagementServerException;
+
+    /**
+     * Deletes all the per-user functionality properties for a tenant.
+     *
+     * @param tenantId Unique identifier for the tenant domain.
+     * @throws UserFunctionalityManagementServerException
+     */
+    void deleteAllPropertiesForTenant(int tenantId) throws UserFunctionalityManagementServerException;
 }

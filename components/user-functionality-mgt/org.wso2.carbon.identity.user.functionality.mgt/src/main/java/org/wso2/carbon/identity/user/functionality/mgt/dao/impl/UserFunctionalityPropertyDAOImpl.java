@@ -146,8 +146,8 @@ public class UserFunctionalityPropertyDAOImpl implements UserFunctionalityProper
      * {@inheritDoc}
      */
     @Override
-    public void deleteProperties(String userId, int tenantId, String functionalityIdentifier,
-                                 Set<String> propertiesToDelete)
+    public void deletePropertiesForUser(String userId, int tenantId, String functionalityIdentifier,
+                                        Set<String> propertiesToDelete)
             throws UserFunctionalityManagementServerException {
 
         JdbcTemplate jdbcTemplate = JdbcUtils.getNewTemplate();
@@ -179,12 +179,12 @@ public class UserFunctionalityPropertyDAOImpl implements UserFunctionalityProper
      * {@inheritDoc}
      */
     @Override
-    public void deleteAllProperties(String userId, int tenantId, String functionalityIdentifier)
+    public void deleteAllPropertiesForUser(String userId, int tenantId, String functionalityIdentifier)
             throws UserFunctionalityManagementServerException {
 
         JdbcTemplate jdbcTemplate = JdbcUtils.getNewTemplate();
         try {
-            jdbcTemplate.executeUpdate(UserFunctionalityMgtConstants.SqlQueries.DELETE_ALL_PROPERTIES,
+            jdbcTemplate.executeUpdate(UserFunctionalityMgtConstants.SqlQueries.DELETE_ALL_PROPERTIES_FOR_MAPPING,
                     preparedStatement -> {
                         preparedStatement.setString(1, userId);
                         preparedStatement.setInt(2, tenantId);
@@ -195,6 +195,30 @@ public class UserFunctionalityPropertyDAOImpl implements UserFunctionalityProper
             String message = String.format(
                     "Error occurred while deleting functionality lock properties from DB for functionality" +
                             " Id: %s, user Id: %s and tenant Id: %d.", functionalityIdentifier, userId, tenantId);
+            if (log.isDebugEnabled()) {
+                log.debug(message, e);
+            }
+            throw new UserFunctionalityManagementServerException(message, e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void deleteAllPropertiesForTenant(int tenantId) throws UserFunctionalityManagementServerException {
+
+        JdbcTemplate jdbcTemplate = JdbcUtils.getNewTemplate();
+        try {
+            jdbcTemplate.executeUpdate(UserFunctionalityMgtConstants.SqlQueries.DELETE_ALL_PROPERTIES_FOR_TENANT,
+                    preparedStatement -> {
+                        preparedStatement.setInt(1, tenantId);
+
+                    });
+        } catch (DataAccessException e) {
+            String message = String.format(
+                    "Error occurred while deleting functionality lock properties from DB for tenant" +
+                            " Id: %d.", tenantId);
             if (log.isDebugEnabled()) {
                 log.debug(message, e);
             }

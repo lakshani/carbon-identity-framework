@@ -43,6 +43,8 @@ public class UserFunctionalityMgtConstants {
                         "FUNCTIONALITY_LOCK_REASON_CODE=?  WHERE USER_ID=? AND TENANT_ID=? AND FUNCTIONALITY_ID=?";
         public static final String DELETE_FUNCTIONALITY_MAPPING =
                 "DELETE FROM IDN_USER_FUNCTIONALITY_MAPPING WHERE USER_ID=? AND TENANT_ID=? AND FUNCTIONALITY_ID=?";
+        public static final String DELETE_ALL_FUNCTIONALITY_MAPPINGS_FOR_TENANT =
+                "DELETE FROM IDN_USER_FUNCTIONALITY_MAPPING WHERE TENANT_ID=?";
 
         public static final String INSERT_PROPERTY = "INSERT INTO IDN_USER_FUNCTIONALITY_PROPERTY (ID, USER_ID, " +
                 "TENANT_ID, FUNCTIONALITY_ID, PROPERTY_NAME, PROPERTY_VALUE) VALUES (?,?,?,?,?,?)";
@@ -56,7 +58,9 @@ public class UserFunctionalityMgtConstants {
         public static final String DELETE_PROPERTY =
                 "DELETE FROM IDN_USER_FUNCTIONALITY_PROPERTY WHERE USER_ID=? AND TENANT_ID=? AND FUNCTIONALITY_ID=? " +
                         "AND PROPERTY_NAME=?";
-        public static final String DELETE_ALL_PROPERTIES =
+        public static final String DELETE_ALL_PROPERTIES_FOR_MAPPING =
+                "DELETE FROM IDN_USER_FUNCTIONALITY_PROPERTY WHERE USER_ID=? AND TENANT_ID=? AND FUNCTIONALITY_ID=?";
+        public static final String DELETE_ALL_PROPERTIES_FOR_TENANT =
                 "DELETE FROM IDN_USER_FUNCTIONALITY_PROPERTY WHERE USER_ID=? AND TENANT_ID=? AND FUNCTIONALITY_ID=?";
     }
 }

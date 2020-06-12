@@ -76,6 +76,14 @@ public interface UserFunctionalityManagerDAO {
      * @param functionalityIdentifier Identifier of the the functionality.
      * @throws UserFunctionalityManagementServerException If error occurs while deleting the user-functionality mapping.
      */
-    void deleteFunctionalityLockEntry(String userId, int tenantId, String functionalityIdentifier)
+    void deleteMappingForUser(String userId, int tenantId, String functionalityIdentifier)
             throws UserFunctionalityManagementServerException;
+
+    /**
+     * Deletes all the user-functionality mappings of a tenant.
+     *
+     * @param tenantId Unique identifier for the tenant domain.
+     * @throws UserFunctionalityManagementServerException
+     */
+    void deleteAllMappingsForTenant(int tenantId) throws UserFunctionalityManagementServerException;
 }
