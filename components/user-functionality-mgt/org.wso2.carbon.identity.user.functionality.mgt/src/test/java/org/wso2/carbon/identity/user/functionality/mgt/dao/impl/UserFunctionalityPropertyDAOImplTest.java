@@ -30,8 +30,10 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.ObjectFactory;
 import org.testng.annotations.Test;
 import org.wso2.carbon.identity.core.util.IdentityDatabaseUtil;
+import org.wso2.carbon.identity.core.util.IdentityUtil;
 import org.wso2.carbon.identity.user.functionality.mgt.UserFunctionalityManager;
 import org.wso2.carbon.identity.user.functionality.mgt.UserFunctionalityManagerImpl;
+import org.wso2.carbon.identity.user.functionality.mgt.UserFunctionalityMgtConstants;
 import org.wso2.carbon.identity.user.functionality.mgt.dao.UserFunctionalityPropertyDAO;
 import org.wso2.carbon.identity.user.functionality.mgt.exception.UserFunctionalityManagementServerException;
 
@@ -60,7 +62,7 @@ import static org.wso2.carbon.identity.user.functionality.mgt.util.TestUtils.ini
 import static org.wso2.carbon.identity.user.functionality.mgt.util.TestUtils.mockDataSource;
 import static org.wso2.carbon.identity.user.functionality.mgt.util.TestUtils.spyConnection;
 
-@PrepareForTest({IdentityDatabaseUtil.class})
+@PrepareForTest({IdentityDatabaseUtil.class, IdentityUtil.class})
 public class UserFunctionalityPropertyDAOImplTest extends PowerMockTestCase {
 
     private static final Log log = LogFactory.getLog(UserFunctionalityPropertyDAOImplTest.class);
@@ -72,7 +74,9 @@ public class UserFunctionalityPropertyDAOImplTest extends PowerMockTestCase {
 
         initiateH2Base();
         mockStatic(IdentityDatabaseUtil.class);
-        Whitebox.setInternalState(UserFunctionalityManagerImpl.class, "perUserFunctionalityLocking", true);
+        mockStatic(IdentityUtil.class);
+        when(IdentityUtil.getProperty(UserFunctionalityMgtConstants.ENABLE_PER_USER_FUNCTIONALITY_LOCKING))
+                .thenReturn("true");
     }
 
     @AfterMethod

@@ -129,7 +129,7 @@ public interface UserFunctionalityManager {
      * @param tenantId Unique identifier for the tenant domain.
      * @throws UserFunctionalityManagementServerException
      */
-    void deleteAllMappingsForTenant(int tenantId);
+    void deleteAllMappingsForTenant(int tenantId) throws UserFunctionalityManagementServerException;
 
     /**
      * Deletes all the per-user functionality properties for a tenant.
@@ -137,5 +137,5 @@ public interface UserFunctionalityManager {
      * @param tenantId Unique identifier for the tenant domain.
      * @throws UserFunctionalityManagementServerException
      */
-    void deleteAllPropertiesForTenant(int tenantId);
+    void deleteAllPropertiesForTenant(int tenantId) throws UserFunctionalityManagementServerException;
 }

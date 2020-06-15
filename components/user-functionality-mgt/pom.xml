@@ -32,7 +32,7 @@
     <packaging>pom</packaging>
     <name>WSO2 Carbon - Per User Functionality Management Aggregator Module</name>
     <description>
-        This is a Carbon bundle that represent the Per User Functionality Management Aggregator Module.
+        This bundle represents the Per User Functionality Management Aggregator Module.
     </description>
     <url>http://wso2.org</url>
 

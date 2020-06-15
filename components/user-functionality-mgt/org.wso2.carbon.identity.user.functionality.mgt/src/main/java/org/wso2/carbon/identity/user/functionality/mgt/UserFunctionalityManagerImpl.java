@@ -37,9 +37,6 @@ import java.util.Set;
  */
 public class UserFunctionalityManagerImpl implements UserFunctionalityManager {
 
-    private static boolean perUserFunctionalityLocking =
-            Boolean.parseBoolean(
-                    IdentityUtil.getProperty(UserFunctionalityMgtConstants.ENABLE_PER_USER_FUNCTIONALITY_LOCKING));
     private UserFunctionalityManagerDAO userFunctionalityManagerDAO = new UserFunctionalityManagerDAOImpl();
     private UserFunctionalityPropertyDAO userFunctionalityPropertyDAO = new UserFunctionalityPropertyDAOImpl();
 
@@ -50,7 +47,7 @@ public class UserFunctionalityManagerImpl implements UserFunctionalityManager {
     public FunctionalityLockStatus getLockStatus(String userId, int tenantId, String functionalityIdentifier)
             throws UserFunctionalityManagementServerException {
 
-        if (!perUserFunctionalityLocking) {
+        if (!isPerUserFunctionalityLockingEnabled()) {
             throw new UnsupportedOperationException("Per-user functionality locking is not enabled.");
         }
         FunctionalityLockStatus
@@ -74,7 +71,7 @@ public class UserFunctionalityManagerImpl implements UserFunctionalityManager {
     public Map<String, String> getProperties(String userId, int tenantId, String functionalityIdentifier)
             throws UserFunctionalityManagementServerException {
 
-        if (!perUserFunctionalityLocking) {
+        if (!isPerUserFunctionalityLockingEnabled()) {
             throw new UnsupportedOperationException("Per-user functionality locking is not enabled.");
         }
         return userFunctionalityPropertyDAO.getAllProperties(userId, tenantId, functionalityIdentifier);
@@ -88,7 +85,7 @@ public class UserFunctionalityManagerImpl implements UserFunctionalityManager {
                               Map<String, String> functionalityLockProperties)
             throws UserFunctionalityManagementServerException {
 
-        if (!perUserFunctionalityLocking) {
+        if (!isPerUserFunctionalityLockingEnabled()) {
             throw new UnsupportedOperationException("Per-user functionality locking is not enabled.");
         }
         Map<String, String> existingProperties = getProperties(userId, tenantId, functionalityIdentifier);
@@ -106,7 +103,7 @@ public class UserFunctionalityManagerImpl implements UserFunctionalityManager {
                      String functionalityLockReasonCode, String functionalityLockReason)
             throws UserFunctionalityManagementException {
 
-        if (!perUserFunctionalityLocking) {
+        if (!isPerUserFunctionalityLockingEnabled()) {
             throw new UnsupportedOperationException("Per-user functionality locking is not enabled.");
         }
         long unlockTime = Long.MAX_VALUE;
@@ -149,7 +146,7 @@ public class UserFunctionalityManagerImpl implements UserFunctionalityManager {
     public void unlock(String userId, int tenantId, String functionalityIdentifier)
             throws UserFunctionalityManagementServerException {
 
-        if (!perUserFunctionalityLocking) {
+        if (!isPerUserFunctionalityLockingEnabled()) {
             throw new UnsupportedOperationException("Per-user functionality locking is not enabled.");
         }
         userFunctionalityManagerDAO.deleteMappingForUser(userId, tenantId, functionalityIdentifier);
@@ -162,7 +159,7 @@ public class UserFunctionalityManagerImpl implements UserFunctionalityManager {
     public void deleteAllPropertiesForUser(String userId, int tenantId, String functionalityIdentifier)
             throws UserFunctionalityManagementServerException {
 
-        if (!perUserFunctionalityLocking) {
+        if (!isPerUserFunctionalityLockingEnabled()) {
             throw new UnsupportedOperationException("Per-user functionality locking is not enabled.");
         }
         userFunctionalityPropertyDAO.deleteAllPropertiesForUser(userId, tenantId, functionalityIdentifier);
@@ -177,10 +174,11 @@ public class UserFunctionalityManagerImpl implements UserFunctionalityManager {
                                         Set<String> propertiesToDelete)
             throws UserFunctionalityManagementServerException {
 
-        if (!perUserFunctionalityLocking) {
+        if (!isPerUserFunctionalityLockingEnabled()) {
             throw new UnsupportedOperationException("Per-user functionality locking is not enabled.");
         }
-        userFunctionalityPropertyDAO.deletePropertiesForUser(userId, tenantId, functionalityIdentifier, propertiesToDelete);
+        userFunctionalityPropertyDAO
+                .deletePropertiesForUser(userId, tenantId, functionalityIdentifier, propertiesToDelete);
 
     }
 
@@ -188,16 +186,18 @@ public class UserFunctionalityManagerImpl implements UserFunctionalityManager {
      * {@inheritDoc}
      */
     @Override
-    public void deleteAllMappingsForTenant(int tenantId) {
+    public void deleteAllMappingsForTenant(int tenantId) throws UserFunctionalityManagementServerException {
 
+        userFunctionalityManagerDAO.deleteAllMappingsForTenant(tenantId);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void deleteAllPropertiesForTenant(int tenantId) {
+    public void deleteAllPropertiesForTenant(int tenantId) throws UserFunctionalityManagementServerException {
 
+        userFunctionalityPropertyDAO.deleteAllPropertiesForTenant(tenantId);
     }
 
     private void addOrUpdateProperties(Map<String, String> newProperties, Map<String, String> oldProperties,
@@ -225,5 +225,11 @@ public class UserFunctionalityManagerImpl implements UserFunctionalityManager {
             userFunctionalityPropertyDAO
                     .updateProperties(userId, tenantId, functionalityIdentifier, propertiesToUpdate);
         }
+    }
+
+    private boolean isPerUserFunctionalityLockingEnabled() {
+
+        return Boolean.parseBoolean(
+                IdentityUtil.getProperty(UserFunctionalityMgtConstants.ENABLE_PER_USER_FUNCTIONALITY_LOCKING));
     }
 }
