@@ -774,7 +774,14 @@
             <OTP>false</OTP>
             <RecoveryLink>false</RecoveryLink>
         </AdminPasswordReset>
+        <NotifyUserExistence>false</NotifyUserExistence>
         <CallbackRegex>${carbon.protocol}://${carbon.host}:${carbon.management.port}/authenticationendpoint/login.do</CallbackRegex>
+        <ErrorMessage>
+            <EnableDetailedErrorMessages>false</EnableDetailedErrorMessages>
+        </ErrorMessage>
+        <AutoLogin>
+            <Enable>false</Enable>
+        </AutoLogin>
     </Recovery>
 
     <EmailVerification>
@@ -1541,6 +1548,8 @@
     Would not affect associations done through provisioning
     -->
     <EnableFederatedUserAssociation>false</EnableFederatedUserAssociation>
+
+    <EnablePerUserFunctionalityLocking>false</EnablePerUserFunctionalityLocking>
 
     <TenantContextsToRewrite>
         <WebApp>
