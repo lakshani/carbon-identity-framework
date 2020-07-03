@@ -938,6 +938,9 @@
             <RecoveryLink>{{identity_mgt.password_reset_by_admin.enable_emailed_link_based_reset}}</RecoveryLink>
         </AdminPasswordReset>
         <CallbackRegex>{{identity_mgt.recovery.callback_url}}</CallbackRegex>
+        <ErrorMessage>
+            <EnableDetailedErrorMessages>{{identity_mgt.recovery.enable_detailed_error_messages}}</EnableDetailedErrorMessages>
+        </ErrorMessage>
     </Recovery>
 
     <Notification>
@@ -1932,6 +1935,8 @@
     Would not affect associations done through provisioning
     -->
     <EnableFederatedUserAssociation>{{user.association.enable_for_federated_users}}</EnableFederatedUserAssociation>
+
+    <EnablePerUserFunctionalityLocking>{{user.enable_per_user_functionality_locking}}</EnablePerUserFunctionalityLocking>
 
     <TenantContextsToRewrite>
         <WebApp>
