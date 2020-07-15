@@ -75,7 +75,7 @@ public class CallBackValidator {
         // Build the service URL of idp management admin service
         StringBuilder builder = new StringBuilder();
         String serviceURL = builder.append(IdentityManagementServiceUtil.getInstance().getServiceContextURL())
-                .append(IdentityManagementEndpointConstants.ServiceEndpoints.IDENTITY_PROVICER_MANAGEMENT_SERVICE)
+                .append(IdentityManagementEndpointConstants.ServiceEndpoints.IDENTITY_PROVIDER_MANAGEMENT_SERVICE)
                 .toString().replaceAll("(?<!(http:|https:))//", "/");
         try {
             IdentityProviderMgtServiceStub idPMgtStub = new IdentityProviderMgtServiceStub(serviceURL);
