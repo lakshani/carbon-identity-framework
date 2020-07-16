@@ -263,8 +263,16 @@ public class JsClaims extends AbstractJSContextMemberObject {
         try {
             // Check if the IDP use an standard dialect (like oidc), If it does, dialect claim mapping are
             // prioritized over IdP claim mapping
-            ApplicationAuthenticator authenticator = getContext().getSequenceConfig().getStepMap().get(step)
-                    .getAuthenticatedAutenticator().getApplicationAuthenticator();
+            ApplicationAuthenticator authenticator = null;
+            for (int checkingStep=getContext().getSequenceConfig().getStepMap().size();
+                 checkingStep > 0; checkingStep--) {
+                if (step == getContext().getSequenceConfig().getStepMap().get(checkingStep).getOrder()) {
+                    StepConfig stepConfig = getContext().getSequenceConfig().getStepMap().get(checkingStep);
+                    if (stepConfig.getAuthenticatedAutenticator() != null && stepConfig.getAuthenticatedUser()!=null) {
+                        authenticator = stepConfig.getAuthenticatedAutenticator().getApplicationAuthenticator();
+                    }
+                }
+            }
             authenticatorDialect = authenticator.getClaimDialectURI();
             ExternalIdPConfig idPConfig = ConfigurationFacade.getInstance().getIdPConfigByName(idp, tenantDomain);
             boolean useDefaultIdpDialect = idPConfig.useDefaultLocalIdpDialect();
