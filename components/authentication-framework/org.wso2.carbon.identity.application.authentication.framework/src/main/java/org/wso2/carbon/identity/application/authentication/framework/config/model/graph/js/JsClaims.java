@@ -18,6 +18,7 @@
 
 package org.wso2.carbon.identity.application.authentication.framework.config.model.graph.js;
 
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -275,14 +276,20 @@ public class JsClaims extends AbstractJSContextMemberObject {
             }
             authenticatorDialect = authenticator.getClaimDialectURI();
             ExternalIdPConfig idPConfig = ConfigurationFacade.getInstance().getIdPConfigByName(idp, tenantDomain);
-            boolean useDefaultIdpDialect = idPConfig.useDefaultLocalIdpDialect();
-
-            if (authenticatorDialect != null || useDefaultIdpDialect) {
+            if (idPConfig.useDefaultLocalIdpDialect()) {
                 if (authenticatorDialect == null) {
                     authenticatorDialect = ApplicationConstants.LOCAL_IDP_DEFAULT_CLAIM_DIALECT;
                 }
                 localToIdpClaimMapping = ClaimMetadataHandler.getInstance().getMappingsMapFromOtherDialectToCarbon
                         (authenticatorDialect, remoteClaimsMap.keySet(), tenantDomain, true);
+            } else if (authenticatorDialect != null) {
+                localToIdpClaimMapping = ClaimMetadataHandler.getInstance().getMappingsMapFromOtherDialectToCarbon
+                        (authenticatorDialect, remoteClaimsMap.keySet(), tenantDomain, true);
+                Map<String, String> customLocalToIDPClaimMapping = IdentityProviderManager.getInstance()
+                        .getMappedIdPClaimsMap(idp, tenantDomain, Collections.singletonList(localClaim));
+                if (MapUtils.isNotEmpty(customLocalToIDPClaimMapping)) {
+                    localToIdpClaimMapping.putAll(customLocalToIDPClaimMapping);
+                }
             } else {
                 localToIdpClaimMapping = IdentityProviderManager.getInstance().getMappedIdPClaimsMap
                         (idp, tenantDomain, Collections
