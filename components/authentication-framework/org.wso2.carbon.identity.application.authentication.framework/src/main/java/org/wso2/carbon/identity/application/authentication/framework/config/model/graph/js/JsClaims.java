@@ -265,11 +265,12 @@ public class JsClaims extends AbstractJSContextMemberObject {
             // Check if the IDP use an standard dialect (like oidc), If it does, dialect claim mapping are
             // prioritized over IdP claim mapping
             ApplicationAuthenticator authenticator = null;
-            for (int checkingStep=getContext().getSequenceConfig().getStepMap().size();
+            for (int checkingStep = getContext().getSequenceConfig().getStepMap().size();
                  checkingStep > 0; checkingStep--) {
                 if (step == getContext().getSequenceConfig().getStepMap().get(checkingStep).getOrder()) {
                     StepConfig stepConfig = getContext().getSequenceConfig().getStepMap().get(checkingStep);
-                    if (stepConfig.getAuthenticatedAutenticator() != null && stepConfig.getAuthenticatedUser()!=null) {
+                    if (stepConfig.getAuthenticatedAutenticator() != null &&
+                            stepConfig.getAuthenticatedUser() != null) {
                         authenticator = stepConfig.getAuthenticatedAutenticator().getApplicationAuthenticator();
                     }
                 }
