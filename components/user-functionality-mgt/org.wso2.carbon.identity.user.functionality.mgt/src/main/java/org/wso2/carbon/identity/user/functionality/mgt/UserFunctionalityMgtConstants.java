@@ -63,4 +63,32 @@ public class UserFunctionalityMgtConstants {
         public static final String DELETE_ALL_PROPERTIES_FOR_TENANT =
                 "DELETE FROM IDN_USER_FUNCTIONALITY_PROPERTY WHERE USER_ID=? AND TENANT_ID=? AND FUNCTIONALITY_ID=?";
     }
+
+    public enum ErrorMessages {
+
+        USER_NOT_FOUND(60001, "Invalid user ID"),
+        ERROR_OCCURRED_WHILE_RETRIEVING_USER(65001, "Error occurred when retrieving user from user ID");
+
+        private final int code;
+        private final String description;
+        private static final String USER_FUNCTIONALITY_MGT_ERROR_PREFIX = "UFM-";
+
+
+        private ErrorMessages(int code, String description) {
+            this.code = code;
+            this.description = description;
+        }
+
+        public String getCode() {
+            return USER_FUNCTIONALITY_MGT_ERROR_PREFIX + this.code;
+        }
+
+        public String getDescription() {
+            return this.description;
+        }
+
+        public String toString() {
+            return this.code + " - " + this.description;
+        }
+    }
 }
