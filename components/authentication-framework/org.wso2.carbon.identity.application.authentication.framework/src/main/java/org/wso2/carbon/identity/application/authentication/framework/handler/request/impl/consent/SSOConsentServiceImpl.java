@@ -479,7 +479,7 @@ public class SSOConsentServiceImpl implements SSOConsentService {
             spDescription = spName;
         }
         serviceInput.setService(spName);
-        serviceInput.setSpDisplayName(spDescription);
+        serviceInput.setSpDisplayName(spName);
         serviceInput.setSpDescription(spDescription);
         return serviceInput;
     }
