@@ -500,4 +500,15 @@ public class IdentityConstants {
         public static final String CARBON_PORT_HTTP_PROPERTY = "mgt.transport.http.port";
         public static final String CARBON_PORT_HTTPS_PROPERTY = "mgt.transport.https.port";
     }
+
+    /**
+     * Contains the constants related to Reverse Proxy configs elements.
+     */
+    public static class ReverseProxyConfigElements {
+
+        public final static String REVERSE_PROXY_CONFIG = "ReverseProxyConfig";
+        public final static String REVERSE_PROXY = "ReverseProxy";
+        public final static String PROXY_CONTEXT = "ProxyContext";
+        public final static String DEFAULT_CONTEXT = "DefaultContext";
+    }
 }
