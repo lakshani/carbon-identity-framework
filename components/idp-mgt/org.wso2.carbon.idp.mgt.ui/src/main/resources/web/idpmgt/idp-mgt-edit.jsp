@@ -76,6 +76,7 @@
     HashMap<String, String> certificateWithRawIdMap = new HashMap<String, String>();
     String jwksUri = null;
     boolean hasJWKSUri = false;
+    String idpIssuerName = null;
     Claim[] identityProviderClaims = null;
     String userIdClaimURI = null;
     String roleClaimURI = null;
@@ -269,6 +270,9 @@
                 if (IdPManagementUIUtil.JWKS_URI.equals(idpProperty.getName())) {
                     hasJWKSUri = true;
                     jwksUri = idpProperty.getValue();
+                }
+                if (IdentityApplicationConstants.IDP_ISSUER_NAME.equals(idpProperty.getName())) {
+                    idpIssuerName = idpProperty.getValue();
                 }
             }
         }
@@ -849,6 +853,10 @@
 
     if (jwksUri == null) {
         jwksUri = "";
+    }
+    
+    if (idpIssuerName == null) {
+        idpIssuerName = "";
     }
 
     if (idpDisplayName == null) {
@@ -3329,6 +3337,18 @@
 
                                 <div class="sectionHelp">
                                     <fmt:message key='resident.idp.alias.help'/>
+                                </div>
+                            </td>
+                        </tr>
+    
+                        <tr>
+                            <td class="leftCol-med labelField"><fmt:message key='idp.issuer.name'/>:</td>
+                            <td>
+                                <input id="idpIssuerName" name="idpIssuerName" type="text"
+                                       value="<%=Encode.forHtmlAttribute(idpIssuerName)%>" autofocus/>
+            
+                                <div class="sectionHelp">
+                                    <fmt:message key='idp.issuer.name.help'/>
                                 </div>
                             </td>
                         </tr>

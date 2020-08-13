@@ -41,14 +41,13 @@ import org.wso2.carbon.identity.application.common.util.IdentityApplicationConst
 import org.wso2.carbon.identity.application.common.util.IdentityApplicationManagementUtil;
 import org.wso2.carbon.identity.core.ConnectorConfig;
 import org.wso2.carbon.identity.core.ConnectorException;
+import org.wso2.carbon.identity.core.model.ExpressionNode;
 import org.wso2.carbon.identity.core.util.IdentityDatabaseUtil;
 import org.wso2.carbon.identity.core.util.IdentityTenantUtil;
-import org.wso2.carbon.identity.core.util.IdentityUtil;
 import org.wso2.carbon.idp.mgt.IdentityProviderManagementClientException;
 import org.wso2.carbon.idp.mgt.IdentityProviderManagementException;
 import org.wso2.carbon.idp.mgt.IdentityProviderManagementServerException;
 import org.wso2.carbon.idp.mgt.internal.IdpMgtServiceComponentHolder;
-import org.wso2.carbon.identity.core.model.ExpressionNode;
 import org.wso2.carbon.idp.mgt.model.ConnectedAppsResult;
 import org.wso2.carbon.idp.mgt.model.FilterQueryBuilder;
 import org.wso2.carbon.idp.mgt.util.IdPManagementConstants;
@@ -3695,5 +3694,52 @@ public class IdPManagementDAO {
             }
         }
         return propertiesFromConnectors;
+    }
+
+    /**
+     * Retrieves the first matching IDP for the given metadata property.
+     * Intended to ony be used to retrieve IDP name based on a unique metadata property.
+     *
+     * @param dbConnection Optional. DB connection.
+     * @param property IDP metadata property name.
+     * @param value Value associated with given Property.
+     * @param tenantId Tenant id whose information is requested.
+     * @return Identity Provider name.
+     * @throws IdentityProviderManagementException IdentityProviderManagementException.
+     */
+    public String getIdPNameByMetadataProperty(Connection dbConnection, String property, String value, int tenantId)
+            throws IdentityProviderManagementException {
+
+        PreparedStatement prepStmt = null;
+        ResultSet rs = null;
+        boolean dbConnectionInitialized = true;
+        if (dbConnection == null) {
+            dbConnection = IdentityDatabaseUtil.getDBConnection(false);
+        } else {
+            dbConnectionInitialized = false;
+        }
+        try {
+            String sqlStmt = IdPManagementConstants.SQLQueries.GET_IDP_NAME_BY_METADATA;
+            prepStmt = dbConnection.prepareStatement(sqlStmt);
+            prepStmt.setString(1, property);
+            prepStmt.setString(2, value);
+            prepStmt.setInt(3, tenantId);
+            rs = prepStmt.executeQuery();
+            String idPName = null;
+
+            if (rs.next()) {
+                idPName = rs.getString(1);
+            }
+            return idPName;
+        } catch (SQLException e) {
+            throw new IdentityProviderManagementException("Error occurred while retrieving Identity Provider " +
+                    "information for IDP metadata property name: " + property + " value: " + value, e);
+        } finally {
+            if (dbConnectionInitialized) {
+                IdentityDatabaseUtil.closeAllConnections(dbConnection, rs, prepStmt);
+            } else {
+                IdentityDatabaseUtil.closeAllConnections(null, rs, prepStmt);
+            }
+        }
     }
 }
