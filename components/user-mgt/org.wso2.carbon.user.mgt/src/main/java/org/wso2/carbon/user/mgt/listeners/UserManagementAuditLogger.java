@@ -21,7 +21,7 @@ package org.wso2.carbon.user.mgt.listeners;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
-import org.apache.log4j.MDC;
+import org.slf4j.MDC;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.wso2.carbon.CarbonConstants;
