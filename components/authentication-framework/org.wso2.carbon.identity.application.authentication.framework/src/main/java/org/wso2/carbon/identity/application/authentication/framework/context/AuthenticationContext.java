@@ -559,7 +559,7 @@ public class AuthenticationContext extends MessageContext implements Serializabl
      * @param claimUri  Claim URI
      * @return Claim value
      */
-    public String getRuntimeClaims(String claimUri) {
+    public String getRuntimeClaim(String claimUri) {
 
         Object parameter = getProperty(FrameworkConstants.RUNTIME_CLAIMS);
         if (parameter instanceof Map) {

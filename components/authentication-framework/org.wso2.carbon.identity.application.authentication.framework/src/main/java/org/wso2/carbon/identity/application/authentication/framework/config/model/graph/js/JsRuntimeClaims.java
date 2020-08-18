@@ -65,19 +65,19 @@ public class JsRuntimeClaims extends JsClaims {
 
     private Object getRuntimeClaim(String claimUri) {
 
-        String runtimeClaimValue = getContext().getRuntimeClaims(claimUri);
+        String runtimeClaimValue = getContext().getRuntimeClaim(claimUri);
         if (runtimeClaimValue != null) {
-            if (isFederatedIdP()) {
-                return getFederatedClaim(claimUri);
-            }
-            return getLocalClaim(claimUri);
+            return runtimeClaimValue;
         }
-        return null;
+        if (isFederatedIdP()) {
+            return getFederatedClaim(claimUri);
+        }
+        return getLocalClaim(claimUri);
     }
 
     private boolean hasRuntimeClaim(String claimUri) {
 
-        String claim = getContext().getRuntimeClaims(claimUri);
+        String claim = getContext().getRuntimeClaim(claimUri);
         if (claim != null) {
             return true;
         }
