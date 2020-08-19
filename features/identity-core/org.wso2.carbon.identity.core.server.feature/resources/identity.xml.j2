@@ -140,6 +140,8 @@
     </OpenID>
 
     <OAuth>
+        <!-- Allow additional parameters in OAuth2 error url-->
+        AllowAdditionalParamsFromErrorUrl>{{oauth.additional_params_from_error_url}}</AllowAdditionalParamsFromErrorUrl>
         <!-- Token cleanup feature config to clean IDN_OAUTH2_ACCESS_TOKEN table-->
         <TokenCleanup>
             <!--If true old access token cleaning feature is enabled -->
@@ -530,6 +532,9 @@
             <AddUnmappedUserAttributes>{{oauth.oidc.claims.enable_unmapped_user_attributes}}</AddUnmappedUserAttributes>
             <IDTokenBuilder>{{oauth.oidc.extensions.id_token_builder}}</IDTokenBuilder>
             <SignatureAlgorithm>{{oauth.oidc.id_token.signature_algorithm}}</SignatureAlgorithm>
+
+            <!-- Send the response to OAuth2 error page -->
+            <RedirectToOAuth2ErrorPage>{{oauth.oidc.id_token.redirect_error_page}}</RedirectToOAuth2ErrorPage>
 
             <!-- Default asymmetric encryption algorithm that used to encrypt CEK. -->
             <IDTokenEncryptionAlgorithm>{{oauth.oidc.id_token.supported_encryption_algorithms[0]}}</IDTokenEncryptionAlgorithm>
