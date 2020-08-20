@@ -276,7 +276,7 @@ public class EntitlementServiceComponent {
                             customPolicies = addPolicyFiles(policyIdList, fileList);
 
                             long endTime = (System.currentTimeMillis() - startTime) / 1000;
-                            log.info("XACML Policies loaded in "  + endTime + " sec");
+                            log.debug("XACML Policies loaded in "  + endTime + " sec");
                         } finally {
                             PrivilegedCarbonContext.endTenantFlow();
                         }
@@ -286,7 +286,7 @@ public class EntitlementServiceComponent {
                 }
 
                 if (!customPolicies) {
-                    // load default policies
+                    // Load default policies.
                     EntitlementUtil.addSamplePolicies(registryService.getGovernanceSystemRegistry());
                 }
 
@@ -321,8 +321,8 @@ public class EntitlementServiceComponent {
     /**
      * Adds policy files with unique policyIDs to the registry.
      *
-     * @param policyIdList
-     * @param fileList
+     * @param policyIdList  List of existing policy IDs.
+     * @param fileList List of new policy files.
      * @return
      * @throws IOException
      */
@@ -338,7 +338,7 @@ public class EntitlementServiceComponent {
                         EntitlementUtil.addFilesystemPolicy(policyDTO, registryService
                                 .getGovernanceSystemRegistry(), true);
                     } catch (Exception e) {
-                        // log and ignore
+                        // Log and ignore.
                         log.error("Error while adding XACML policies", e);
                     }
                 }
