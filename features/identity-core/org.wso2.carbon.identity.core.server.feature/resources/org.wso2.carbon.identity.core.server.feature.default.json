@@ -27,6 +27,7 @@
 
   "service_provider.sp_name_regex": "^[a-zA-Z0-9._-]+(?: [a-zA-Z0-9._-]+)*$",
 
+  "oauth.additional_params_from_error_url": false,
   "oauth.token_cleanup.enable": true,
   "oauth.token_cleanup.retain_access_tokens_for_auditing": true,
 
@@ -143,6 +144,7 @@
   "oauth.oidc.claims.enable_unmapped_user_attributes": false,
 
   "oauth.oidc.id_token.signature_algorithm": "SHA256withRSA",
+  "oauth.oidc.id_token.redirect_error_page": false,
   "oauth.oidc.id_token.issuer": "$ref{oauth.endpoints.oauth2_token_url}",
   "oauth.oidc.extensions.claim_callback_handler": "org.wso2.carbon.identity.openidconnect.SAMLAssertionClaimsCallback",
   "oauth.oidc.token_validation.id_token_validity": "1h",
