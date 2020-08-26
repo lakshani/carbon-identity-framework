@@ -27,6 +27,9 @@
 
   "service_provider.sp_name_regex": "^[a-zA-Z0-9._-]+(?: [a-zA-Z0-9._-]+)*$",
 
+  "jwt.enable.iat_validation": true,
+  "jwt.iat.validity_period": "30",
+
   "oauth.additional_params_from_error_url": false,
   "oauth.token_cleanup.enable": true,
   "oauth.token_cleanup.retain_access_tokens_for_auditing": true,
