@@ -28,9 +28,6 @@ import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.identity.application.authentication.framework.AuthenticationDataPublisher;
 import org.wso2.carbon.identity.application.authentication.framework.AuthenticationFlowHandler;
 import org.wso2.carbon.identity.application.authentication.framework.cache.AuthenticationRequestCacheEntry;
-import org.wso2.carbon.identity.application.authentication.framework.cache.SessionContextCache;
-import org.wso2.carbon.identity.application.authentication.framework.cache.SessionContextCacheEntry;
-import org.wso2.carbon.identity.application.authentication.framework.cache.SessionContextCacheKey;
 import org.wso2.carbon.identity.application.authentication.framework.config.model.ApplicationConfig;
 import org.wso2.carbon.identity.application.authentication.framework.config.model.AuthenticatorConfig;
 import org.wso2.carbon.identity.application.authentication.framework.config.model.SequenceConfig;
@@ -56,10 +53,6 @@ import org.wso2.carbon.identity.application.common.model.ClaimMapping;
 import org.wso2.carbon.identity.application.common.model.Property;
 import org.wso2.carbon.identity.application.common.model.ServiceProvider;
 import org.wso2.carbon.identity.core.util.IdentityTenantUtil;
-import org.wso2.carbon.identity.event.IdentityEventConstants;
-import org.wso2.carbon.identity.event.IdentityEventException;
-import org.wso2.carbon.identity.event.event.Event;
-import org.wso2.carbon.identity.event.services.IdentityEventService;
 import org.wso2.carbon.registry.core.utils.UUIDGenerator;
 import org.wso2.carbon.user.api.Tenant;
 import org.wso2.carbon.user.api.UserStoreException;
@@ -633,7 +626,7 @@ public class DefaultRequestCoordinator extends AbstractRequestCoordinator implem
                 //Starting tenant-flow as tenant domain is retrieved downstream from the carbon-context to get the
                 // tenant wise session expiry time
                 FrameworkUtils.startTenantFlow(context.getTenantDomain());
-                sessionContext = getSessionContextFromCache(request, context, sessionContextKey);
+                sessionContext = FrameworkUtils.getSessionContextFromCache(request, context, sessionContextKey);
             } catch (AuthenticationFailedException e) {
                 log.error("Error in finding the previous authenticated session.", e);
             } finally {
@@ -714,75 +707,6 @@ public class DefaultRequestCoordinator extends AbstractRequestCoordinator implem
 
         // set the sequence for the current authentication/logout flow
         context.setSequenceConfig(effectiveSequence);
-    }
-
-    /**
-     * Trigger SESSION_EXPIRE event on session expiry due to a session idle timeout or a remember me session time out.
-     *
-     * @param request        HttpServletRequest.
-     * @param context        Authentication context.
-     * @param sessionContext Session context.
-     * @throws AuthenticationFailedException Error in triggering the session expiry event.
-     */
-    private void triggerSessionExpireEvent(HttpServletRequest request, AuthenticationContext context,
-                                           SessionContext sessionContext) throws AuthenticationFailedException {
-
-        AuthenticatedUser authenticatedUser = new AuthenticatedUser();
-        if (sessionContext != null) {
-            Object authenticatedUserObj = sessionContext.getProperty(FrameworkConstants.AUTHENTICATED_USER);
-            if (authenticatedUserObj instanceof AuthenticatedUser) {
-                authenticatedUser = (AuthenticatedUser) authenticatedUserObj;
-            }
-            context.setSubject(authenticatedUser);
-
-            IdentityEventService eventService = FrameworkServiceDataHolder.getInstance().getIdentityEventService();
-            try {
-                Map<String, Object> eventProperties = new HashMap<>();
-                eventProperties.put(IdentityEventConstants.EventProperty.REQUEST, request);
-                eventProperties.put(IdentityEventConstants.EventProperty.CONTEXT, context);
-                eventProperties.put(IdentityEventConstants.EventProperty.SESSION_CONTEXT, sessionContext);
-                Map<String, Object> paramMap = new HashMap<>();
-                paramMap.put(FrameworkConstants.AnalyticsAttributes.USER, authenticatedUser);
-                paramMap.put(FrameworkConstants.AnalyticsAttributes.SESSION_ID, context.getSessionIdentifier());
-                Map<String, Object> unmodifiableParamMap = Collections.unmodifiableMap(paramMap);
-                eventProperties.put(IdentityEventConstants.EventProperty.PARAMS, unmodifiableParamMap);
-
-                Event event = new Event(IdentityEventConstants.EventName.SESSION_EXPIRE.name(), eventProperties);
-                eventService.handleEvent(event);
-            } catch (IdentityEventException e) {
-                throw new AuthenticationFailedException("Error in triggering the session expire event.", e);
-            }
-        }
-    }
-
-    /**
-     * Retrieve session context from the session cache.
-     *
-     * @param request           HttpServletRequest.
-     * @param context           Authentication context.
-     * @param sessionContextKey Session context key.
-     * @return Session context key.
-     * @throws AuthenticationFailedException Error in triggering session expire event.
-     */
-    private SessionContext getSessionContextFromCache(HttpServletRequest request, AuthenticationContext context,
-                                                      String sessionContextKey) throws AuthenticationFailedException {
-
-        SessionContext sessionContext = null;
-        if (StringUtils.isNotBlank(sessionContextKey)) {
-            SessionContextCacheKey cacheKey = new SessionContextCacheKey(sessionContextKey);
-            SessionContextCache sessionContextCache = SessionContextCache.getInstance();
-            SessionContextCacheEntry cacheEntry = sessionContextCache.getSessionContextCacheEntry(cacheKey);
-
-            if (cacheEntry != null) {
-                sessionContext = cacheEntry.getContext();
-                boolean isSessionExpired = sessionContextCache.checkForSessionExpiry(cacheKey, cacheEntry);
-                if (isSessionExpired) {
-                    triggerSessionExpireEvent(request, context, sessionContext);
-                    return null;
-                }
-            }
-        }
-        return sessionContext;
     }
 
     /**

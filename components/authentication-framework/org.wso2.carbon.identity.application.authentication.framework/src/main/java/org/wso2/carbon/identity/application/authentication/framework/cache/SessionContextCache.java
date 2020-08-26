@@ -114,7 +114,7 @@ public class SessionContextCache extends BaseCache<SessionContextCacheKey, Sessi
     }
 
     /**
-     * Get session context cache entry from the cache object.
+     * Get session context cache entry from the cache.
      *
      * @param key Session context cache key.
      * @return Session context cache entry.
@@ -144,20 +144,20 @@ public class SessionContextCache extends BaseCache<SessionContextCacheKey, Sessi
      * @param cacheEntry Session context cache entry.
      * @return True if the session is expired else return false.
      */
-    public boolean checkForSessionExpiry(SessionContextCacheKey cachekey, SessionContextCacheEntry cacheEntry) {
+    public boolean isSessionExpired(SessionContextCacheKey cachekey, SessionContextCacheEntry cacheEntry) {
 
-        if (!isValidIdleSession(cachekey, cacheEntry) && !isValidRememberMeSession(cachekey, cacheEntry)) {
+        if (isValidIdleSession(cachekey, cacheEntry) || isValidRememberMeSession(cachekey, cacheEntry)) {
             if (log.isDebugEnabled()) {
-                log.debug("Found an expired session corresponding to the key : " + cachekey.getContextId());
+                log.debug("A valid session is available corresponding to the key : " + cachekey.getContextId());
             }
-            clearCacheEntry(cachekey);
-            return true;
+            return false;
         }
 
         if (log.isDebugEnabled()) {
-            log.debug("A valid session is available corresponding to the key : " + cachekey.getContextId());
+            log.debug("Found an expired session corresponding to the key : " + cachekey.getContextId());
         }
-        return false;
+        clearCacheEntry(cachekey);
+        return true;
     }
 
     public void clearCacheEntry(SessionContextCacheKey key) {
