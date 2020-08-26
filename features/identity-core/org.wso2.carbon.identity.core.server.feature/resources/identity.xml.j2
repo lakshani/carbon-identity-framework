@@ -510,12 +510,12 @@
             <!-- Validate issued at time (iat) of JWT token. The validity can be set using 'IATValidity' configuration.
              Default value is 'true'.
              -->
-            <EnableIATValidation>true</EnableIATValidation>
+            <EnableIATValidation>{{jwt.enable.iat_validation}}</EnableIATValidation>
             <!-- Reject the JWT if the iat of JWT is pass a certain time period. Time period is in minutes.
              'EnableIATValidation' configuration should be set to 'true' in order to make use of the validity period.
              Default value is '30' minutes.
              -->
-            <IATValidityPeriod>30</IATValidityPeriod>
+            <IATValidityPeriod>{{jwt.iat.validity_period}}</IATValidityPeriod>
         </JWTGrant>
 
         <SAML2Grant>
