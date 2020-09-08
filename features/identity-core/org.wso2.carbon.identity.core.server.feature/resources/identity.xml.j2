@@ -764,8 +764,8 @@
         <SAML2AuthenticationRequestValidityPeriod>{{saml.request_validity_period}}</SAML2AuthenticationRequestValidityPeriod>
         <SAMLSPCertificateExpiryValidationEnabled>{{saml.enable_saml_sp_certificate_expiry_validation}}</SAMLSPCertificateExpiryValidationEnabled>
         <SAML2AuthnRequestsSigningEnabled>{{saml.metadata.enable_authentication_requests_signing}}</SAML2AuthnRequestsSigningEnabled>
-        {% if ssoservice.ignore_name_id_policy_if_unspecified is defined %}
-        <IgnoreNameIdPolicyIfUnspecified>{{ssoservice.ignore_name_id_policy_if_unspecified}}</IgnoreNameIdPolicyIfUnspecified>
+        {% if saml.metadata.ignore_name_id_policy_if_unspecified is defined %}
+        <SAML2AuthnRequestNameIdPolicyIgnoredIfUnspecified>{{saml.metadata.ignore_name_id_policy_if_unspecified}}</SAML2AuthnRequestNameIdPolicyIgnoredIfUnspecified>
         {% endif %}
     </SSOService>
 
