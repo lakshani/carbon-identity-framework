@@ -133,8 +133,7 @@
   "identity_mgt.events.schemes.TokenBindingExpiryEventHandler.properties.enable": false,
   "identity_mgt.events.schemes.TokenBindingExpiryEventHandler.module_index": "22",
   "identity_mgt.events.schemes.TokenBindingExpiryEventHandler.subscriptions": [
-    "SESSION_TERMINATE",
-    "SESSION_EXPIRE"
+    "SESSION_TERMINATE"
   ],
   "identity_mgt.events.schemes.'default.notification.sender'.properties.'subscription.TRIGGER_SMS_NOTIFICATION.stream'":"id_gov_sms_notify_stream:1.0.0",
   "identity_mgt.events.schemes.'default.notification.sender'.properties.'subscription.TRIGGER_SMS_NOTIFICATION.claim.mobile'":"http://wso2.org/claims/mobile",

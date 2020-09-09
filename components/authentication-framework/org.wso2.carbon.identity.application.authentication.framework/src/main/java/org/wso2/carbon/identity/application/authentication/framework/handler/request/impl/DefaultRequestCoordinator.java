@@ -35,7 +35,6 @@ import org.wso2.carbon.identity.application.authentication.framework.config.mode
 import org.wso2.carbon.identity.application.authentication.framework.context.AuthenticationContext;
 import org.wso2.carbon.identity.application.authentication.framework.context.SessionContext;
 import org.wso2.carbon.identity.application.authentication.framework.context.TransientObjectWrapper;
-import org.wso2.carbon.identity.application.authentication.framework.exception.AuthenticationFailedException;
 import org.wso2.carbon.identity.application.authentication.framework.exception.FrameworkException;
 import org.wso2.carbon.identity.application.authentication.framework.exception.JsFailureException;
 import org.wso2.carbon.identity.application.authentication.framework.exception.MisconfigurationException;
@@ -620,15 +619,13 @@ public class DefaultRequestCoordinator extends AbstractRequestCoordinator implem
             }
 
             String sessionContextKey = DigestUtils.sha256Hex(cookie.getValue());
-            SessionContext sessionContext = null;
+            SessionContext sessionContext;
             // get the authentication details from the cache
             try {
                 //Starting tenant-flow as tenant domain is retrieved downstream from the carbon-context to get the
                 // tenant wise session expiry time
                 FrameworkUtils.startTenantFlow(context.getTenantDomain());
-                sessionContext = FrameworkUtils.getSessionContextFromCache(request, context, sessionContextKey);
-            } catch (AuthenticationFailedException e) {
-                log.error("Error in finding the previous authenticated session.", e);
+                sessionContext = FrameworkUtils.getSessionContextFromCache(sessionContextKey);
             } finally {
                 FrameworkUtils.endTenantFlow();
             }
