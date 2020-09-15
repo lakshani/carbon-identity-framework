@@ -39,11 +39,13 @@ import org.wso2.carbon.identity.application.authentication.framework.store.UserS
 import org.wso2.carbon.identity.application.authentication.framework.util.FrameworkUtils;
 import org.wso2.carbon.identity.application.authentication.framework.util.SessionMgtConstants;
 import org.wso2.carbon.identity.application.common.model.User;
+import org.wso2.carbon.identity.core.util.IdentityUtil;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.api.UserStoreManager;
 import org.wso2.carbon.user.core.UserCoreConstants;
 import org.wso2.carbon.user.core.common.AbstractUserStoreManager;
 import org.wso2.carbon.user.core.service.RealmService;
+import org.wso2.carbon.user.core.util.UserCoreUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,6 +57,8 @@ public class UserSessionManagementServiceImpl implements UserSessionManagementSe
 
     private static final Log log = LogFactory.getLog(UserSessionManagementServiceImpl.class);
     private SessionManagementService sessionManagementService = new SessionManagementService();
+    private static final String PRESERVE_SESSION_WHEN_PASSWORD_UPDATE = "PasswordUpdate.PreserveCurrentSessionAndToken";
+    private static final String CURRENT_SESSION_IDENTIFIER = "currentSessionIdentifier";
 
     @Override
     public void terminateSessionsOfUser(String username, String userStoreDomain, String tenantDomain) throws
@@ -176,8 +180,26 @@ public class UserSessionManagementServiceImpl implements UserSessionManagementSe
                     null);
         }
         List<String> sessionIdList = getSessionIdListByUserId(userId);
+
+        boolean isSessionPreservingAtPasswordUpdateEnabled =
+                Boolean.parseBoolean(IdentityUtil.getProperty(PRESERVE_SESSION_WHEN_PASSWORD_UPDATE));
+        String currentSessionId = "";
+        boolean isSessionTerminationSkipped = false;
+        if (isSessionPreservingAtPasswordUpdateEnabled) {
+            if (IdentityUtil.threadLocalProperties.get().get(CURRENT_SESSION_IDENTIFIER) != null) {
+                currentSessionId = (String) IdentityUtil.threadLocalProperties.get().get(CURRENT_SESSION_IDENTIFIER);
+            }
+            if (sessionIdList.remove(currentSessionId)) {
+                isSessionTerminationSkipped = true;
+            }
+        }
+
         if (log.isDebugEnabled()) {
-            log.debug("Terminating all the active sessions of user: " + userId + ".");
+            if (isSessionTerminationSkipped) {
+                log.debug("Terminating the active sessions of user: " + userId + "except the current session.");
+            } else {
+                log.debug("Terminating all the active sessions of user: " + userId + ".");
+            }
         }
         terminateSessionsOfUser(sessionIdList);
         if (!sessionIdList.isEmpty()) {
