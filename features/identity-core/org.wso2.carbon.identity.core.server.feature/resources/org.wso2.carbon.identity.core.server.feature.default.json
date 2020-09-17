@@ -512,5 +512,7 @@
 
   "analytics.publish_password_grant_logins": false,
 
-  "continue_on_claim_handling_error.enable": true
+  "continue_on_claim_handling_error.enable": true,
+
+  "password_update.preserve_current_session_and_token": false
 }
