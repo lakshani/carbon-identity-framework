@@ -27,6 +27,10 @@
 
   "service_provider.sp_name_regex": "^[a-zA-Z0-9._-]+(?: [a-zA-Z0-9._-]+)*$",
 
+  "jwt.enable.iat_validation": true,
+  "jwt.iat.validity_period": "30",
+
+  "oauth.additional_params_from_error_url": false,
   "oauth.token_cleanup.enable": true,
   "oauth.token_cleanup.retain_access_tokens_for_auditing": true,
 
@@ -83,6 +87,9 @@
   "oauth.response_type.device.enable": true,
   "oauth.response_type.device.class": "org.wso2.carbon.identity.oauth2.device.response.DeviceFlowResponseTypeHandler",
   "oauth.response_type.device.validator": "org.wso2.carbon.identity.oauth2.device.response.DeviceFlowResponseTypeValidator",
+
+  "oauth.grant_type.jwt.enable_iat_validation":"true",
+  "oauth.grant_type.jwt.iat_validity_period":"30",
 
   "oauth.grant_type.authorization_code.enable": true,
   "oauth.grant_type.authorization_code.grant_handler": "org.wso2.carbon.identity.oauth2.token.handlers.grant.AuthorizationCodeGrantHandler",
@@ -143,6 +150,7 @@
   "oauth.oidc.claims.enable_unmapped_user_attributes": false,
 
   "oauth.oidc.id_token.signature_algorithm": "SHA256withRSA",
+  "oauth.oidc.id_token.redirect_error_page": false,
   "oauth.oidc.id_token.issuer": "$ref{oauth.endpoints.oauth2_token_url}",
   "oauth.oidc.extensions.claim_callback_handler": "org.wso2.carbon.identity.openidconnect.SAMLAssertionClaimsCallback",
   "oauth.oidc.token_validation.id_token_validity": "1h",
@@ -244,6 +252,7 @@
   "identity_mgt.endpoint.enable_self_signup_endpoint": true,
   "identity_mgt.password_reset_email.enable_password_reset_email": false,
   "identity_mgt.password_reset_sms.sms_otp_validity": "1m",
+  "identity_mgt.password_reset_sms.sms_otp_regex": "[a-zA-Z0-9]{6}",
   "identity_mgt.password_reset_email.enable_recaptcha": false,
   "identity_mgt.password_reset_email.reset_mail_validity": "$ref{identity_mgt.default_mail_validity_period}",
   "identity_mgt.notification_channel_recovery.recovery_code_validity": "1m",

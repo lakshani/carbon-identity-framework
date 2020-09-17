@@ -252,6 +252,8 @@ public class IdentityConstants {
         public static final String SAML_ECP_URL = "SSOService.SAMLECPEndpoint";
         public static final String SAML_METADATA_AUTHN_REQUESTS_SIGNING_ENABLED = "SSOService" +
                 ".SAML2AuthnRequestsSigningEnabled";
+        public static final String IGNORE_NAME_ID_POLICY_IF_UNSPECIFIED = "SSOService" +
+                ".SAML2AuthnRequestNameIdPolicyIgnoredIfUnspecified";
 
         //Identity Persistence Manager
         public static final String SKIP_DB_SCHEMA_CREATION = "JDBCPersistenceManager.SkipDBSchemaCreation";
@@ -499,5 +501,16 @@ public class IdentityConstants {
 
         public static final String CARBON_PORT_HTTP_PROPERTY = "mgt.transport.http.port";
         public static final String CARBON_PORT_HTTPS_PROPERTY = "mgt.transport.https.port";
+    }
+
+    /**
+     * Contains the constants related to Reverse Proxy configs elements.
+     */
+    public static class ReverseProxyConfigElements {
+
+        public final static String REVERSE_PROXY_CONFIG = "ReverseProxyConfig";
+        public final static String REVERSE_PROXY = "ReverseProxy";
+        public final static String PROXY_CONTEXT = "ProxyContext";
+        public final static String DEFAULT_CONTEXT = "DefaultContext";
     }
 }

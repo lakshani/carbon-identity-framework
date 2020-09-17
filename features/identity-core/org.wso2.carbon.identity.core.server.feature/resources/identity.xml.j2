@@ -140,6 +140,8 @@
     </OpenID>
 
     <OAuth>
+        <!-- Allow additional parameters in OAuth2 error url -->
+        <AllowAdditionalParamsFromErrorUrl>{{oauth.additional_params_from_error_url}}</AllowAdditionalParamsFromErrorUrl>
         <!-- Token cleanup feature config to clean IDN_OAUTH2_ACCESS_TOKEN table-->
         <TokenCleanup>
             <!--If true old access token cleaning feature is enabled -->
@@ -508,12 +510,22 @@
             <!-- Validate issued at time (iat) of JWT token. The validity can be set using 'IATValidity' configuration.
              Default value is 'true'.
              -->
-            <EnableIATValidation>true</EnableIATValidation>
+            {% if jwt.enable.iat_validation is defined %}
+            <!--This config will be DEPRECATED. Use `oauth.grant_type.jwt.enable_iat_validation`-->
+            <EnableIATValidation>{{jwt.enable.iat_validation}}</EnableIATValidation>
+            {% else %}
+            <EnableIATValidation>{{oauth.grant_type.jwt.enable_iat_validation}}</EnableIATValidation>
+            {% endif %}
             <!-- Reject the JWT if the iat of JWT is pass a certain time period. Time period is in minutes.
              'EnableIATValidation' configuration should be set to 'true' in order to make use of the validity period.
              Default value is '30' minutes.
              -->
-            <IATValidityPeriod>30</IATValidityPeriod>
+            {% if jwt.iat.validity_period is defined %}
+            <!--This config will be DEPRECATED. Use `oauth.grant_type.jwt.iat_validity_period`-->
+            <IATValidityPeriod>{{jwt.iat.validity_period}}</IATValidityPeriod>
+            {% else %}
+            <IATValidityPeriod>{{oauth.grant_type.jwt.iat_validity_period}}</IATValidityPeriod>
+            {% endif %}
         </JWTGrant>
 
         <SAML2Grant>
@@ -530,6 +542,9 @@
             <AddUnmappedUserAttributes>{{oauth.oidc.claims.enable_unmapped_user_attributes}}</AddUnmappedUserAttributes>
             <IDTokenBuilder>{{oauth.oidc.extensions.id_token_builder}}</IDTokenBuilder>
             <SignatureAlgorithm>{{oauth.oidc.id_token.signature_algorithm}}</SignatureAlgorithm>
+
+            <!-- Send the response to OAuth2 error page -->
+            <RedirectToOAuth2ErrorPage>{{oauth.oidc.id_token.redirect_error_page}}</RedirectToOAuth2ErrorPage>
 
             <!-- Default asymmetric encryption algorithm that used to encrypt CEK. -->
             <IDTokenEncryptionAlgorithm>{{oauth.oidc.id_token.supported_encryption_algorithms[0]}}</IDTokenEncryptionAlgorithm>
@@ -601,7 +616,7 @@
             <AddTenantDomainToIdToken>false</AddTenantDomainToIdToken>
             {% endif %}
             <!-- Add userstore domain to 'realm' claim of ID Token-->
-            % if oauth.oidc.id_token.add_userstore_domain_to_realm is defined %}
+            {% if oauth.oidc.id_token.add_userstore_domain_to_realm is defined %}
             <AddUserstoreDomainToIdToken>{{oauth.oidc.id_token.add_userstore_domain_to_realm}}</AddUserstoreDomainToIdToken>
             {% else %}
             <AddUserstoreDomainToIdToken>false</AddUserstoreDomainToIdToken>
@@ -689,6 +704,15 @@
         </DCRM>
 
         <!--
+        By enabling this config, additional parameters will be append to OAuth2 error url.
+        Currently it appends SP and tenant domain as the additional parameters.
+        Default value : false
+        -->
+        {% if oauth.allow_additional_params_from_error_url is defined %}
+        <AllowAdditionalParamsFromErrorUrl>{{oauth.allow_additional_params_from_error_url}}</AllowAdditionalParamsFromErrorUrl>
+        {% endif %}
+
+        <!--
         By enabling this feature, server will identify a JWT token at the introspection endpoint by attempting a JWT
         token parsing. If identified, introspection is performed by treating the token as a JWT access token.
 
@@ -759,6 +783,9 @@
         <SAML2AuthenticationRequestValidityPeriod>{{saml.request_validity_period}}</SAML2AuthenticationRequestValidityPeriod>
         <SAMLSPCertificateExpiryValidationEnabled>{{saml.enable_saml_sp_certificate_expiry_validation}}</SAMLSPCertificateExpiryValidationEnabled>
         <SAML2AuthnRequestsSigningEnabled>{{saml.metadata.enable_authentication_requests_signing}}</SAML2AuthnRequestsSigningEnabled>
+        {% if saml.metadata.ignore_name_id_policy_if_unspecified is defined %}
+        <SAML2AuthnRequestNameIdPolicyIgnoredIfUnspecified>{{saml.metadata.ignore_name_id_policy_if_unspecified}}</SAML2AuthnRequestNameIdPolicyIgnoredIfUnspecified>
+        {% endif %}
     </SSOService>
 
     <Consent>
@@ -912,6 +939,9 @@
                 <ExpiryTime>
                     <smsOtp>{{identity_mgt.password_reset_sms.sms_otp_validity}}</smsOtp>
                 </ExpiryTime>
+                <smsOtp>
+                    <Regex>{{identity_mgt.password_reset_sms.sms_otp_regex}}</Regex>
+                </smsOtp>
             </Password>
             <Username>
                 <Enable>{{identity_mgt.username_recovery.email.enable_username_recovery}}</Enable>
@@ -1344,7 +1374,8 @@
 
     <ResourceAccessControl {% if resource_access_control.default_access_allow is sameas false %} default-access="deny" {% endif %} {% if resource_access_control.disable_scope_validation is sameas true %} disable-scope-validation="true" {% endif %}>
         {% for resource in resource.access_control %}
-        <Resource context="{{resource.context}}" secured="{{resource.secure}}" http-method="{{resource.http_method}}">
+        <Resource context="{{resource.context}}" secured="{{resource.secure}}"
+                {% if resource.allowed_auth_handlers is defined %} allowed-auth-handlers="{{resource.allowed_auth_handlers|join(', ')}}" {% endif %} http-method="{{resource.http_method}}">
             {% for permission in resource.permissions %}
             <Permissions>{{permission}}</Permissions>
             {% endfor %}
@@ -1702,6 +1733,18 @@
             <Permissions>/permission/admin/manage/identity/identitymgt/delete</Permissions>
             <Scopes>internal_identity_mgt_delete</Scopes>
         </Resource>
+         <Resource context="(.*)/api/users/v1/me/user-functionality(.*)" secured="true" http-method="GET, PUT">
+            <Permissions>none</Permissions>
+            <Scopes>internal_login</Scopes>
+         </Resource>
+        <Resource context="(.*)/api/users/v1/(.*)/user-functionality(.*)" secured="true" http-method="GET">
+            <Permissions>/permission/admin/manage/identity/identitymgt/view</Permissions>
+            <Scopes>internal_identity_mgt_view</Scopes>
+        </Resource>
+        <Resource context="(.*)/api/users/v1/(.*)/user-functionality(.*)" secured="true" http-method="PUT">
+            <Permissions>/permission/admin/manage/identity/identitymgt/update</Permissions>
+            <Scopes>internal_identity_mgt_update</Scopes>
+        </Resource>
         <Resource context="(.*)/api/server/v1/claim-dialects(.*)" secured="true" http-method="POST">
             <Permissions>/permission/admin/manage/identity/claimmgt/metadata/create</Permissions>
             <Scopes>internal_claim_meta_create</Scopes>
@@ -1947,7 +1990,10 @@
 </ResourceAccessControl>
 
     <ClientAppAuthentication>
-        <Application name="dashboard" hash="66cd9688a2ae068244ea01e70f0e230f5623b7fa4cdecb65070a09ec06452262"/>
+        <Application name="{{account_recovery.endpoint.auth.name}}" hash="{{account_recovery.endpoint.auth.hash}}" />
+        {% for client_app in client_apps.authentication %}
+        <Application name="{{client_app.name}}" hash="{{client_app.hash}}" />
+        {% endfor %}
     </ClientAppAuthentication>
 
     <!--
@@ -1963,14 +2009,23 @@
             {% for webapp in tenant_context.rewrite.webapps %}
             <Context>{{webapp}}</Context>
             {% endfor %}
+            {% for webapp in tenant_context.rewrite.custom_webapps %}
+            <Context>{{webapp}}</Context>
+            {% endfor %}
         </WebApp>
         <Servlet>
             {% for servlet in tenant_context.rewrite.servlets %}
             <Context>{{servlet}}</Context>
             {% endfor %}
+            {% for servlet in tenant_context.rewrite.custom_servlets %}
+            <Context>{{servlet}}</Context>
+            {% endfor %}
         </Servlet>
         <OverwriteDispatch>
             {% for context in tenant_context.rewrite.overwrite.dispatch %}
+            <Context>{{context}}</Context>
+            {% endfor %}
+            {% for context in tenant_context.rewrite.overwrite.custom_dispatch %}
             <Context>{{context}}</Context>
             {% endfor %}
         </OverwriteDispatch>
@@ -2094,5 +2149,16 @@
     <UserIdentifier>
         <DisallowedCharacters>{{user_identifier.disallowed.characters.regex}}</DisallowedCharacters>
     </UserIdentifier>
+    {% endif %}
+
+    {% if reverse_proxy_config is defined %}
+    <ReverseProxyConfig>
+        {% for config in reverse_proxy_config %}
+        <ReverseProxy>
+            <DefaultContext>{{config.default_context}}</DefaultContext>
+            <ProxyContext>{{config.proxy_context}}</ProxyContext>
+        </ReverseProxy>
+        {% endfor %}
+    </ReverseProxyConfig>
     {% endif %}
 </Server>
