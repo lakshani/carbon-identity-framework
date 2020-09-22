@@ -124,7 +124,7 @@
 
   "oauth.dcrm.application_role_permission_required_to_view": true,
 
-  "oauth.enable_jwt_token_validation_during_introspection": true,
+  "oauth.enable_jwt_token_validation_during_introspection": false,
 
   "oauth.extensions.callback_handlers": [
     {
