@@ -81,6 +81,7 @@ public class DefaultAuthenticationRequestHandler implements AuthenticationReques
     private static final Log log = LogFactory.getLog(DefaultAuthenticationRequestHandler.class);
     private static final Log AUDIT_LOG = CarbonConstants.AUDIT_LOG;
     private static volatile DefaultAuthenticationRequestHandler instance;
+    private static String CHANGE_COMMON_AUTH_COOKIE_EXPIRY = "RememberMe.ChangeCommonAuthCookieExpiryOnAuth";
 
     public static DefaultAuthenticationRequestHandler getInstance() {
 
@@ -417,6 +418,15 @@ public class DefaultAuthenticationRequestHandler implements AuthenticationReques
                     }
                 }
 
+                /*
+                 * In the default configuration, the expiry time of the commonAuthCookie is fixed when rememberMe
+                 * option is selected. With this config, the expiry time will increase at every authentication.
+                 */
+                if (sessionContext.isRememberMe() &&
+                        Boolean.parseBoolean(IdentityUtil.getProperty(CHANGE_COMMON_AUTH_COOKIE_EXPIRY))) {
+                    context.setRememberMe(sessionContext.isRememberMe());
+                    setAuthCookie(request, response, context, commonAuthCookie, applicationTenantDomain);
+                }
                 // TODO add to cache?
                 // store again. when replicate  cache is used. this may be needed.
                 FrameworkUtils.addSessionContextToCache(sessionContextKey, sessionContext, applicationTenantDomain);
