@@ -19,6 +19,7 @@
   "session_data.cleanup.pre_session_data_cleanup_thread_pool_size": "20",
   "session.timeout.idle_session_timeout": "15m",
   "session.timeout.remember_me_session_timeout": "14d",
+  "session.timeout.extend_remember_me_session_timeout_on_auth": false,
   "key_mgt.keystore_dir": "${carbon.home}/conf/keystores",
   "key_mgt.key_manager_type": "SunX509",
   "key_mgt.trust_manager_type": "SunX509",
@@ -125,8 +126,6 @@
   "oauth.dcrm.application_role_permission_required_to_view": true,
 
   "oauth.enable_jwt_token_validation_during_introspection": false,
-
-  "remember_me.commonauth_cookie_expiry.change_on_auth": false,
 
   "oauth.extensions.callback_handlers": [
     {
