@@ -126,6 +126,8 @@
 
   "oauth.enable_jwt_token_validation_during_introspection": false,
 
+  "remember_me.commonauth_cookie_expiry.change_on_auth": false,
+
   "oauth.extensions.callback_handlers": [
     {
       "class":"org.wso2.carbon.identity.oauth.callback.DefaultCallbackHandler"

@@ -728,6 +728,15 @@
         <EnableJWTTokenValidationDuringIntrospection>{{oauth.enable_jwt_token_validation_during_introspection}}</EnableJWTTokenValidationDuringIntrospection>
     </OAuth>
 
+    <!--
+    Setting ChangeCommonAuthCookieExpiryOnAuth to TRUE will change the expiry time of the commonAuth cookie
+    during the authentication. The default value will be FALSE and the expiry time of the commonAuth cookie
+    will not change.
+    -->
+    <RememberMe>
+        <ChangeCommonAuthCookieExpiryOnAuth>{{remember_me.commonauth_cookie_expiry.change_on_auth}}</ChangeCommonAuthCookieExpiryOnAuth>
+    </RememberMe>
+
     <MultifactorAuthentication>
         <!--Enable>false</Enable-->
         <XMPPSettings>
