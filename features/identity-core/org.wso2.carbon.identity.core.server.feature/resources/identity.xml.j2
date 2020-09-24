@@ -60,6 +60,12 @@
     <TimeConfig>
         <SessionIdleTimeout>{{session.timeout.idle_session_timeout}}</SessionIdleTimeout>
         <RememberMeTimeout>{{session.timeout.remember_me_session_timeout}}</RememberMeTimeout>
+        <!--
+        Setting ExtendRememberMeSessionTimeoutOnAuth to TRUE will change the expiry time of the commonAuth cookie
+        during the authentication. The default value will be FALSE and the expiry time of the commonAuth cookie
+        will not change.
+        -->
+        <ExtendRememberMeSessionTimeoutOnAuth>{{session.timeout.extend_remember_me_session_timeout_on_auth}}</ExtendRememberMeSessionTimeoutOnAuth>
     </TimeConfig>
 
     <!-- Security configurations -->
@@ -723,7 +729,7 @@
                    does not include this claim, introspection breaks once this feature is enabled. In such scenarios,
                    a compatible JWT token validator should be deployed in the system prior to enabling this feature.
 
-        Default value: true
+        Default value: false
         -->
         <EnableJWTTokenValidationDuringIntrospection>{{oauth.enable_jwt_token_validation_during_introspection}}</EnableJWTTokenValidationDuringIntrospection>
     </OAuth>
