@@ -133,7 +133,12 @@ public abstract class AbstractApplicationAuthenticator implements ApplicationAut
     protected boolean retryAuthenticationEnabled(AuthenticationContext context) {
         SequenceConfig sequenceConfig = context.getSequenceConfig();
         AuthenticationGraph graph = sequenceConfig.getAuthenticationGraph();
-        if (graph == null || !graph.isEnabled()) {
+        boolean isRetryAuthenticatorEnabled = false;
+        Map<String, String> authParams = context.getAuthenticatorParams(context.getCurrentAuthenticator());
+        if (MapUtils.isNotEmpty(authParams)) {
+            isRetryAuthenticatorEnabled = Boolean.parseBoolean(authParams.get("enableRetryFromAuthenticator"));
+        }
+        if (graph == null || !graph.isEnabled() || isRetryAuthenticatorEnabled) {
             return retryAuthenticationEnabled();
         }
         return false;
