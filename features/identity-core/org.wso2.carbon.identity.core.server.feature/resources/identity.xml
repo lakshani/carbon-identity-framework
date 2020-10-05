@@ -1704,4 +1704,8 @@
         <ShowDisplayName>false</ShowDisplayName>
     </UserFiltering>
 
+    <!-- Configuration for preserving the current session and token when updating the password. -->
+    <PasswordUpdate>
+        <PreserveLoggedInSession>false</PreserveLoggedInSession>
+    </PasswordUpdate>
 </Server>
