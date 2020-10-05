@@ -128,6 +128,9 @@ public abstract class FrameworkConstants {
     public static final String FEDERATED_IDP_ROLE_CLAIM_VALUE_SEPARATOR =
             "FederatedIDPRoleClaimValueAttributeSeparator";
 
+    // Current session thread local identifier.
+    public static final String CURRENT_SESSION_IDENTIFIER = "currentSessionIdentifier";
+
     private FrameworkConstants() {
 
     }
@@ -220,6 +223,13 @@ public abstract class FrameworkConstants {
          */
         public static final String USER_SESSION_MAPPING_ENABLED =
                 "JDBCPersistenceManager.SessionDataPersist.UserSessionMapping.Enable";
+
+        /**
+         * Configuration to enable preserving user from being logged out at password update by skipping current
+         * session and token from being terminated.
+         */
+        public static final String PRESERVE_LOGGED_IN_SESSION_AT_PASSWORD_UPDATE =
+                "PasswordUpdate.PreserveLoggedInSession";
 
         private Config() {
         }
