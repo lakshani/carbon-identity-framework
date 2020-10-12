@@ -732,6 +732,15 @@
         Default value: false
         -->
         <EnableJWTTokenValidationDuringIntrospection>{{oauth.enable_jwt_token_validation_during_introspection}}</EnableJWTTokenValidationDuringIntrospection>
+
+        {% if oauth.allowed_scopes is defined %}
+        <!-- Configuration to pass a list of scopes which are allowed without any validation. -->
+        <AllowedScopes>
+            {%for scope in oauth.allowed_scopes%}
+                <Scope>{{scope}}</Scope>
+            {% endfor %}
+        </AllowedScopes>
+        {% endif %}
     </OAuth>
 
     <MultifactorAuthentication>
