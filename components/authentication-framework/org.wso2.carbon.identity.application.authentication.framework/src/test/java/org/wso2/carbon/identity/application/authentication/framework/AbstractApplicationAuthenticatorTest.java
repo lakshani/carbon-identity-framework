@@ -17,7 +17,6 @@
 package org.wso2.carbon.identity.application.authentication.framework;
 
 
-import org.apache.commons.collections.MapUtils;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -227,7 +226,7 @@ public class AbstractApplicationAuthenticatorTest {
         when(context.getSequenceConfig()).thenReturn(sequenceConfig);
         when(context.getCurrentAuthenticator()).thenReturn("TestAuthenticator");
         Map<String, String> authParams = new HashMap<>();
-        authParams.put("enableRetryFromAuthenticator", "true");
+        authParams.put(AbstractApplicationAuthenticator.ENABLE_RETRY_FROM_AUTHENTICATOR, "true");
         when(context.getAuthenticatorParams("TestAuthenticator")).thenReturn(authParams);
         AuthenticationGraph graph = new AuthenticationGraph();
         graph.setEnabled(true);
