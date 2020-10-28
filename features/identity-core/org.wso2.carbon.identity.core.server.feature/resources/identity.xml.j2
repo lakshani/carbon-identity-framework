@@ -297,36 +297,36 @@
             <SupportedGrantType>
                 <GrantTypeName>authorization_code</GrantTypeName>
                 <GrantTypeHandlerImplClass>{{oauth.grant_type.authorization_code.grant_handler}}</GrantTypeHandlerImplClass>
-                {% for custom_handler in oauth.grant_type.authorization_code.custom_handlers %}
-                <GrantTypeHandlerImplClass>{{custom_handler}}</GrantTypeHandlerImplClass>
-                {% endfor %}
+                {% if oauth.grant_type.authorization_code.grant_validator is defined %}
+                <GrantTypeValidatorImplClass>{{oauth.grant_type.authorization_code.grant_validator}}</GrantTypeValidatorImplClass>
+                {% endif %}
             </SupportedGrantType>
             {% endif %}
             {% if oauth.grant_type.password.enable is sameas true %}
             <SupportedGrantType>
                 <GrantTypeName>password</GrantTypeName>
                 <GrantTypeHandlerImplClass>{{oauth.grant_type.password.grant_handler}}</GrantTypeHandlerImplClass>
-                {% for custom_handler in oauth.grant_type.password.custom_handlers %}
-                <GrantTypeHandlerImplClass>{{custom_handler}}</GrantTypeHandlerImplClass>
-                {% endfor %}
+                {% if oauth.grant_type.password.grant_validator is defined %}
+                <GrantTypeValidatorImplClass>{{oauth.grant_type.password.grant_validator}}</GrantTypeValidatorImplClass>
+                {% endif %}
             </SupportedGrantType>
             {% endif %}
             {% if oauth.grant_type.refresh_token.enable is sameas true %}
             <SupportedGrantType>
                 <GrantTypeName>refresh_token</GrantTypeName>
                 <GrantTypeHandlerImplClass>{{oauth.grant_type.refresh_token.grant_handler}}</GrantTypeHandlerImplClass>
-                {% for custom_handler in oauth.grant_type.refresh_token.custom_handlers %}
-                <GrantTypeHandlerImplClass>{{custom_handler}}</GrantTypeHandlerImplClass>
-                {% endfor %}
+                {% if oauth.grant_type.refresh_token.grant_validator is defined %}
+                <GrantTypeValidatorImplClass>{{oauth.grant_type.refresh_token.grant_validator}}</GrantTypeValidatorImplClass>
+                {% endif %}
             </SupportedGrantType>
             {% endif %}
             {% if oauth.grant_type.client_credentials.enable is sameas true %}
             <SupportedGrantType>
                 <GrantTypeName>client_credentials</GrantTypeName>
                 <GrantTypeHandlerImplClass>{{oauth.grant_type.client_credentials.grant_handler}}</GrantTypeHandlerImplClass>
-                {% for custom_handler in oauth.grant_type.client_credentials.custom_handlers %}
-                <GrantTypeHandlerImplClass>{{custom_handler}}</GrantTypeHandlerImplClass>
-                {% endfor %}
+                {% if oauth.grant_type.client_credentials.grant_validator is defined %}
+                <GrantTypeValidatorImplClass>{{oauth.grant_type.client_credentials.grant_validator}}</GrantTypeValidatorImplClass>
+                {% endif %}
                 <IsRefreshTokenAllowed>{{oauth.grant_type.client_credentials.allow_refresh_tokens}}</IsRefreshTokenAllowed>
                 <IdTokenAllowed>{{oauth.grant_type.client_credentials.allow_id_token}}</IdTokenAllowed>
             </SupportedGrantType>
@@ -335,18 +335,18 @@
             <SupportedGrantType>
                 <GrantTypeName>urn:ietf:params:oauth:grant-type:saml2-bearer</GrantTypeName>
                 <GrantTypeHandlerImplClass>{{oauth.grant_type.saml_bearer.grant_handler}}</GrantTypeHandlerImplClass>
-                {% for custom_handler in oauth.grant_type.saml_bearer.custom_handlers %}
-                <GrantTypeHandlerImplClass>{{custom_handler}}</GrantTypeHandlerImplClass>
-                {% endfor %}
+                {% if oauth.grant_type.saml_bearer.grant_validator is defined %}
+                <GrantTypeValidatorImplClass>{{oauth.grant_type.saml_bearer.grant_validator}}</GrantTypeValidatorImplClass>
+                {% endif %}
             </SupportedGrantType>
             {% endif %}
             {% if oauth.grant_type.iwa_ntlm.enable is sameas true %}
             <SupportedGrantType>
                 <GrantTypeName>iwa:ntlm</GrantTypeName>
                 <GrantTypeHandlerImplClass>{{oauth.grant_type.iwa_ntlm.grant_handler}}</GrantTypeHandlerImplClass>
-                {% for custom_handler in oauth.grant_type.iwa_ntlm.custom_handlers %}
-                <GrantTypeHandlerImplClass>{{custom_handler}}</GrantTypeHandlerImplClass>
-                {% endfor %}
+                {% if oauth.grant_type.iwa_ntlm.grant_validator is defined %}
+                <GrantTypeValidatorImplClass>{{oauth.grant_type.iwa_ntlm.grant_validator}}</GrantTypeValidatorImplClass>
+                {% endif %}
             </SupportedGrantType>
             {% endif %}
             {% if oauth.grant_type.jwt_bearer.enable is sameas true %}
@@ -354,12 +354,6 @@
                 <GrantTypeName>urn:ietf:params:oauth:grant-type:jwt-bearer</GrantTypeName>
                 <GrantTypeHandlerImplClass>{{oauth.grant_type.jwt_bearer.grant_handler}}</GrantTypeHandlerImplClass>
                 <GrantTypeValidatorImplClass>{{oauth.grant_type.jwt_bearer.grant_validator}}</GrantTypeValidatorImplClass>
-                {% for custom_handler in oauth.grant_type.jwt_bearer.custom_handlers %}
-                <GrantTypeHandlerImplClass>{{custom_handler}}</GrantTypeHandlerImplClass>
-                {% endfor %}
-                {% for custom_validator in oauth.grant_type.jwt_bearer.custom_validators %}
-                <GrantTypeValidatorImplClass>{{custom_validator}}</GrantTypeValidatorImplClass>
-                {% endfor %}
             </SupportedGrantType>
             {% endif %}
             {% if oauth.grant_type.uma_ticket.enable is sameas true %}
@@ -367,12 +361,6 @@
                 <GrantTypeName>urn:ietf:params:oauth:grant-type:uma-ticket</GrantTypeName>
                 <GrantTypeHandlerImplClass>{{oauth.grant_type.uma_ticket.grant_handler}}</GrantTypeHandlerImplClass>
                 <GrantTypeValidatorImplClass>{{oauth.grant_type.uma_ticket.grant_validator}}</GrantTypeValidatorImplClass>
-                {% for custom_handler in oauth.grant_type.uma_ticket.custom_handlers %}
-                <GrantTypeHandlerImplClass>{{custom_handler}}</GrantTypeHandlerImplClass>
-                {% endfor %}
-                {% for custom_validator in oauth.grant_type.uma_ticket.custom_validators %}
-                <GrantTypeValidatorImplClass>{{custom_validator}}</GrantTypeValidatorImplClass>
-                {% endfor %}
             </SupportedGrantType>
             {% endif %}
             {% if oauth.grant_type.kerberos.enable is sameas true %}
@@ -380,12 +368,6 @@
                 <GrantTypeName>kerberos</GrantTypeName>
                 <GrantTypeHandlerImplClass>{{oauth.grant_type.kerberos.grant_handler}}</GrantTypeHandlerImplClass>
                 <GrantTypeValidatorImplClass>{{oauth.grant_type.kerberos.grant_validator}}</GrantTypeValidatorImplClass>
-                {% for custom_handler in oauth.grant_type.kerberos.custom_handlers %}
-                <GrantTypeHandlerImplClass>{{custom_handler}}</GrantTypeHandlerImplClass>
-                {% endfor %}
-                {% for custom_validator in oauth.grant_type.kerberos.custom_validators %}
-                <GrantTypeValidatorImplClass>{{custom_validator}}</GrantTypeValidatorImplClass>
-                {% endfor %}
             </SupportedGrantType>
             {% endif %}
             {% if oauth.grant_type.account_switch.enable is sameas true %}
@@ -393,12 +375,6 @@
                 <GrantTypeName>account_switch</GrantTypeName>
                 <GrantTypeHandlerImplClass>{{oauth.grant_type.account_switch.grant_handler}}</GrantTypeHandlerImplClass>
                 <GrantTypeValidatorImplClass>{{oauth.grant_type.account_switch.grant_validator}}</GrantTypeValidatorImplClass>
-                {% for custom_handler in oauth.grant_type.account_switch.custom_handlers %}
-                <GrantTypeHandlerImplClass>{{custom_handler}}</GrantTypeHandlerImplClass>
-                {% endfor %}
-                {% for custom_validator in oauth.grant_type.account_switch.custom_validators %}
-                <GrantTypeValidatorImplClass>{{custom_validator}}</GrantTypeValidatorImplClass>
-                {% endfor %}
             </SupportedGrantType>
             {% endif %}
             {% if oauth.grant_type.device_code.enable is sameas true %}
@@ -406,12 +382,6 @@
                 <GrantTypeName>urn:ietf:params:oauth:grant-type:device_code</GrantTypeName>
                 <GrantTypeHandlerImplClass>{{oauth.grant_type.device_code.grant_handler}}</GrantTypeHandlerImplClass>
                 <GrantTypeValidatorImplClass>{{oauth.grant_type.device_code.grant_validator}}</GrantTypeValidatorImplClass>
-                {% for custom_handler in oauth.grant_type.device_code.custom_handlers %}
-                <GrantTypeHandlerImplClass>{{custom_handler}}</GrantTypeHandlerImplClass>
-                {% endfor %}
-                {% for custom_validator in oauth.grant_type.device_code.custom_validators %}
-                <GrantTypeValidatorImplClass>{{custom_validator}}</GrantTypeValidatorImplClass>
-                {% endfor %}
                 <IdTokenAllowed>true</IdTokenAllowed>
             </SupportedGrantType>
             {% endif %}
