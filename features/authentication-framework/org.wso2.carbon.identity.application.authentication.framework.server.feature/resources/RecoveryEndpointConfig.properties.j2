@@ -16,5 +16,10 @@
 # under the License.
 #
 
+{% if identity.auth_framework.endpoint.identity_server_service_url is defined %}
+identity.server.service.contextURL={{identity.auth_framework.endpoint.identity_server_service_url}}
+{% endif %}
 app.name={{identity.auth_framework.endpoint.app_name}}
 app.password={{identity.auth_framework.endpoint.app_password}}
+identity.server.service.access.username={{identity.server.service.access.username}}
+identity.server.service.access.password={{identity.server.service.access.password}}
