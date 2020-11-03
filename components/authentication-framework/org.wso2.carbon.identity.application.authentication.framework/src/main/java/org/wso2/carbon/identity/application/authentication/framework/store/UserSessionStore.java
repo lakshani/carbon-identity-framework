@@ -509,6 +509,7 @@ public class UserSessionStore {
             throw new DataAccessException("Error while storing application data for session in the database.", e);
         }
     }
+
     /**
      * Method to store app session data if the particular app session is not already exists in the database.
      *
