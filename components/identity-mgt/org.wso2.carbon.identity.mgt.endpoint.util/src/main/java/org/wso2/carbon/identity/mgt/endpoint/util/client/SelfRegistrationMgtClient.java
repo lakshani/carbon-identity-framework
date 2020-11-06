@@ -37,6 +37,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.wso2.carbon.base.MultitenantConstants;
+import org.wso2.carbon.identity.core.util.IdentityTenantUtil;
+import org.wso2.carbon.identity.mgt.constants.SelfRegistrationStatusCodes;
 import org.wso2.carbon.identity.mgt.endpoint.util.IdentityManagementEndpointConstants;
 import org.wso2.carbon.identity.mgt.endpoint.util.IdentityManagementEndpointUtil;
 import org.wso2.carbon.identity.mgt.endpoint.util.IdentityManagementServiceUtil;
@@ -236,6 +238,14 @@ public class SelfRegistrationMgtClient {
             user.put(PROPERTIES, properties);
 
             String tenantDomain = MultitenantUtils.getTenantDomain(username);
+            int tenantId = IdentityTenantUtil.getTenantId(tenantDomain);
+            if (MultitenantConstants.INVALID_TENANT_ID == tenantId) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Invalid tenant domain :" + tenantDomain + ", found in username: " + username);
+                }
+                return Integer.parseInt(SelfRegistrationStatusCodes.ERROR_CODE_INVALID_TENANT);
+            }
+
             HttpPost post = new HttpPost(getUserAPIEndpoint(tenantDomain));
             setAuthorizationHeader(post);
 
