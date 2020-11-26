@@ -153,6 +153,9 @@ public class IdentityEventConstants {
         public static final String POST_DISABLE_ACCOUNT = "POST_DISABLE_ACCOUNT";
         public static final String PRE_ENABLE_ACCOUNT = "PRE_ENABLE_ACCOUNT";
         public static final String POST_ENABLE_ACCOUNT = "POST_ENABLE_ACCOUNT";
+        public static final String PRE_ADD_USER_WITH_ASK_PASSWORD = "PRE_ADD_USER_WITH_ASK_PASSWORD";
+        public static final String POST_ADD_USER_WITH_ASK_PASSWORD = "POST_ADD_USER_WITH_ASK_PASSWORD";
+        public static final String FORCE_PASSWORD_RESET_BY_ADMIN = "FORCE_PASSWORD_RESET_BY_ADMIN";
     }
 
     /**
@@ -226,6 +229,8 @@ public class IdentityEventConstants {
         public static final String USER_OLD_CHALLENGE_ANSWERS = "userOldChallengeAnswers";
         public static final String LAST_PASSWORD_UPDATE_TIME = "lastPasswordUpdateTime";
         public static final String LAST_LOGIN_TIME = "lastLoginTime";
+        public static final String UPDATED_LOCKED_STATUS = "updatedLockStatus";
+        public static final String UPDATED_DISABLED_STATUS = "updatedDisableStatus";
     }
 
     public class ErrorMessage {
