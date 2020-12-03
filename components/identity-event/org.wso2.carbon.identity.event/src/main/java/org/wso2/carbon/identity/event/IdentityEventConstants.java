@@ -155,7 +155,8 @@ public class IdentityEventConstants {
         public static final String POST_ENABLE_ACCOUNT = "POST_ENABLE_ACCOUNT";
         public static final String PRE_ADD_USER_WITH_ASK_PASSWORD = "PRE_ADD_USER_WITH_ASK_PASSWORD";
         public static final String POST_ADD_USER_WITH_ASK_PASSWORD = "POST_ADD_USER_WITH_ASK_PASSWORD";
-        public static final String FORCE_PASSWORD_RESET_BY_ADMIN = "FORCE_PASSWORD_RESET_BY_ADMIN";
+        public static final String PRE_FORCE_PASSWORD_RESET_BY_ADMIN = "PRE_FORCE_PASSWORD_RESET_BY_ADMIN";
+        public static final String POST_FORCE_PASSWORD_RESET_BY_ADMIN = "POST_FORCE_PASSWORD_RESET_BY_ADMIN";
     }
 
     /**
