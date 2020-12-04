@@ -157,6 +157,16 @@ public class IdentityEventConstants {
         public static final String POST_ADD_USER_WITH_ASK_PASSWORD = "POST_ADD_USER_WITH_ASK_PASSWORD";
         public static final String PRE_FORCE_PASSWORD_RESET_BY_ADMIN = "PRE_FORCE_PASSWORD_RESET_BY_ADMIN";
         public static final String POST_FORCE_PASSWORD_RESET_BY_ADMIN = "POST_FORCE_PASSWORD_RESET_BY_ADMIN";
+        public static final String PRE_GENERATE_EMAIL_OTP = "PRE_GENERATE_EMAIL_OTP";
+        public static final String POST_GENERATE_EMAIL_OTP = "POST_GENERATE_EMAIL_OTP";
+        public static final String PRE_VALIDATE_EMAIL_OTP = "PRE_VALIDATE_EMAIL_OTP";
+        public static final String POST_VALIDATE_EMAIL_OTP = "POST_VALIDATE_EMAIL_OTP";
+        public static final String PRE_GENERATE_SMS_OTP = "PRE_GENERATE_SMS_OTP";
+        public static final String POST_GENERATE_SMS_OTP = "POST_GENERATE_SMS_OTP";
+        public static final String PRE_VALIDATE_SMS_OTP = "PRE_VALIDATE_SMS_OTP";
+        public static final String POST_VALIDATE_SMS_OTP = "POST_VALIDATE_SMS_OTP";
+        public static final String PRE_VERIFY_EMAIL_CLIAM = "PRE_VERIFY_EMAIL_CLIAM";
+        public static final String POST_VERIFY_EMAIL_CLIAM = "POST_VERIFY_EMAIL_CLIAM";
     }
 
     /**
